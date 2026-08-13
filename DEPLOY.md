@@ -33,16 +33,16 @@ scp -r config root@91.234.199.189:/opt/seeditarchive/
 Create `/opt/seeditarchive/.env` on the VPS with mode `0600`:
 
 ```dotenv
-PKC_RPC_URL=ws://localhost:9138/REPLACE_WITH_DAEMON_AUTH_TOKEN
+PKC_RPC_URL=ws://localhost:9138
 SITE_URL=https://seeditarchive.org
 ALLOWED_ORIGINS=https://seeditarchive.org,https://seedit.app
 CRAWL_INTERVAL_MS=300000
 CRAWL_MAX_PAGES=20
 ```
 
-The same authenticated PKC RPC URL is already used by the co-located
-`5archive` service. Copy it between root-owned env files **on the VPS**; never
-print it or move it through a workstation.
+Because this service uses host networking, `localhost` reaches the daemon as a
+local connection. Do **not** copy the daemon's remote auth key into this env
+file: it is unnecessary and dependency logs must never receive it.
 
 Build and start only this Compose project:
 

@@ -53,8 +53,8 @@ Two deployments share this repository:
                  planned Seedit in-app search
 ```
 
-- **API + crawler** run beside the Bitsocial daemon, so its authenticated PKC
-  RPC URL never leaves the VPS.
+- **API + crawler** run beside the Bitsocial daemon and use its local-only PKC
+  RPC endpoint; the daemon's remote auth key is not needed or stored here.
 - **Web UI** is a GPL-3.0-or-later fork of the public
   [`bitsocial-indexer`](https://github.com/bitsocialnet/bitsocial-indexer)
   web UI, deployed to Vercel and pointed at the public read-only API.
