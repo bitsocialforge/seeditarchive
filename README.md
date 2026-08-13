@@ -40,7 +40,7 @@ Two deployments share this repository:
                            |
  +------------------------------------------------------+
  | VPS 91.234.199.189                                   |
- | bitsocial-indexer server (Docker, 127.0.0.1:4001)   |
+ | bitsocial-indexer server (Docker, 127.0.0.1:4002)   |
  | crawler -> SQLite + FTS5 -> Fastify read-only API   |
  | Caddy -> https://api.seeditarchive.org              |
  +-------------------------+----------------------------+

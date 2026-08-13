@@ -7,7 +7,7 @@
 # Networking: the container shares the host's network so the crawler can reach
 # the bitsocial-cli daemon on ws://localhost:9138 (the daemon binds to host
 # loopback). HOST=127.0.0.1 keeps the API itself loopback-only — the host's
-# Caddy terminates TLS for api.seeditarchive.org and proxies to :4001.
+# Caddy terminates TLS for api.seeditarchive.org and proxies to :4002.
 services:
   server:
     build:
@@ -17,7 +17,7 @@ services:
     environment:
       # Bind: loopback only; Caddy is the public face.
       HOST: 127.0.0.1
-      PORT: 4001
+      PORT: 4002
       # Cap the V8 heap (defaults let it balloon to ~4 GiB; box has OOM-killed
       # before). This instance starts with 10 Seedit communities; raise only
       # after checking container memory and crawler logs.

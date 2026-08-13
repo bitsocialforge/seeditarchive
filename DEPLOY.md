@@ -51,13 +51,13 @@ cd /opt/seeditarchive
 docker compose up -d --build
 docker compose ps
 docker compose logs --tail=100 server
-curl -sS http://127.0.0.1:4001/api/health | jq
+curl -sS http://127.0.0.1:4002/api/health | jq
 ```
 
 Operational boundaries:
 
 - host networking lets `ws://localhost:9138` reach the daemon;
-- the API binds only `127.0.0.1:4001`;
+- the API binds only `127.0.0.1:4002` (`4001` belongs to the host's IPFS daemon);
 - the V8 heap starts at 512 MiB with a 1 GiB container limit;
 - SQLite persists in the `seeditarchive_data` Docker volume; and
 - the engine builds from `bitsocial-indexer`'s `master` branch.
@@ -67,10 +67,10 @@ Operational boundaries:
 Add a single vhost to `/etc/caddy/Caddyfile`:
 
 ```caddy
-# Seedit Archive — API/crawler (-> 127.0.0.1:4001)
+# Seedit Archive — API/crawler (-> 127.0.0.1:4002)
 api.seeditarchive.org {
 	encode zstd gzip
-	reverse_proxy 127.0.0.1:4001
+	reverse_proxy 127.0.0.1:4002
 }
 ```
 
