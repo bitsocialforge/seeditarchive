@@ -118,13 +118,17 @@ Production environment:
 | `BRAND_URL` | `https://bitsocialforge.com` |
 | `CONTACT_EMAIL` | a monitored takedown address, once configured |
 
-Attach both domains and deploy:
+Attach both domains:
 
 ```bash
 vercel domains add seeditarchive.org --scope toms-projects-2188af94
 vercel domains add www.seeditarchive.org --scope toms-projects-2188af94
-vercel deploy --prod --yes --scope toms-projects-2188af94
 ```
+
+The project is connected to `bitsocialforge/seeditarchive`, with `webui/` as
+its Vercel root and `master` as its production branch. Production deploys are
+Git-based: pushing a validated commit to `master` builds and promotes the web
+UI automatically.
 
 ## 6. Acceptance checks
 
@@ -153,5 +157,5 @@ Also verify:
 | Community scope | Regenerate, copy `config/`, then `docker compose restart server` |
 | Takedown blocklist | Copy `config/blocklist.json`; no restart is required |
 | Indexer engine | `docker compose build --no-cache && docker compose up -d` |
-| Web UI | Push `master` for normal Git deployment, or use a manual Vercel deploy |
+| Web UI | Push `master`; Vercel builds the linked `webui/` project automatically |
 | Compose/env conventions | Copy `docker-compose.yml`, then recreate only this service |
