@@ -73,16 +73,41 @@ Two deployments share this repository:
 | `.env.example` | Documents server configuration; the real `.env` stays on the VPS |
 | `DEPLOY.md` | VPS, Caddy, Cloudflare, and Vercel runbook |
 
-## Local checks
+## Local development
+
+Same workflow as the other Bitsocial clients (5chan, seedit): one `yarn start`
+runs the web UI on a stable named URL through
+[portless](https://www.npmjs.com/package/portless) — no port numbers to
+remember, and the browser opens by itself.
 
 ```bash
-node scripts/build-communities.mjs
-
-cd webui
-npm ci
-npm run typecheck
-npm run build
+corepack yarn install     # root dev tooling, and webui/ deps via npm
+corepack yarn start       # https://seeditarchive.localhost
 ```
+
+| Command | What it does |
+|---|---|
+| `yarn start` | Next.js dev server (HMR) at `https://seeditarchive.localhost` |
+| `yarn start:preview` | Production build of `webui/`, served at the same URL |
+| `yarn build` | `next build` in `webui/` |
+| `yarn type-check` | `tsc --noEmit` in `webui/` |
+| `yarn communities:build` | Regenerates `config/communities.json` |
+
+The first portless run asks for sudo once to bind port 443 and trust its local
+CA. On a branch other than `master` the URL becomes
+`https://<branch>.seeditarchive.localhost`, so several checkouts can run at the
+same time. `PORTLESS=0 yarn start` skips portless and serves
+`http://localhost:3000` instead (also the automatic Windows fallback).
+
+Dev defaults live in `webui/.env.development`: the local UI reads the public
+production API (`https://api.seeditarchive.org`), so `yarn start` shows the real
+archive without running a crawler. Override anything in `webui/.env.local`
+(gitignored) — e.g. `INDEXER_API=http://localhost:4000` to develop against a
+local indexer from `docker-compose.yml`.
+
+`webui/` keeps its own npm lockfile because Vercel deploys that directory as
+the project root; the root yarn project owns only the dev workflow and installs
+`webui/` for you.
 
 The production crawler requires access to the authenticated Bitsocial daemon.
 See [DEPLOY.md](DEPLOY.md) for the complete deployment and smoke-test flow.
