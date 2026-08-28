@@ -35,8 +35,10 @@ Create `/opt/seeditarchive/.env` on the VPS with mode `0600`:
 ```dotenv
 PKC_RPC_URL=ws://localhost:9138
 SITE_URL=https://seeditarchive.org
-ALLOWED_ORIGINS=https://seeditarchive.org,https://seedit.app
-CRAWL_INTERVAL_MS=300000
+ALLOWED_ORIGINS=https://seeditarchive.org,https://seedit.app,https://seedit.localhost
+CRAWL_INTERVAL_MS=5000
+CRAWL_CONCURRENCY=8
+CRAWL_TIMEOUT_MS=30000
 CRAWL_MAX_PAGES=20
 ```
 
@@ -146,8 +148,21 @@ Also verify:
 - `/api/communities` contains Seedit communities and no 5chan-only boards;
 - a real query returns indexed Seedit content;
 - view-source contains server-rendered post content;
-- the API returns `Access-Control-Allow-Origin` for both
-  `https://seeditarchive.org` and `https://seedit.app`; and
+- the CORS allowlist echoes exactly the listed origins. The engine defaults to
+  `*` when `ALLOWED_ORIGINS` is unset, so this is the check that catches a
+  missing, misspelled, or unexported env var — without it, an open API looks
+  identical to a correctly configured one:
+
+  ```bash
+  # The first three origins must be echoed back; the last must not.
+  for o in https://seeditarchive.org https://seedit.app https://seedit.localhost https://unlisted.example; do
+    printf '%s -> ' "$o"
+    curl -sS -D - -o /dev/null -H "Origin: $o" \
+      'https://api.seeditarchive.org/api/search?q=test&limit=1' \
+      | grep -i '^access-control-allow-origin:' || echo '(none — correctly blocked)'
+  done
+  ```
+
 - `/legal` displays a monitored contact before public promotion.
 
 ## Updates

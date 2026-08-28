@@ -11,9 +11,9 @@ crawls the maintained Seedit discovery set continuously, keeps posts searchable
 after they leave active community pages, and renders server-side pages for
 search engines and durable public links.
 
-The archive API is also the integration seam for Seedit's planned in-app
-full-text search. That later client change will query this instance instead of
-turning Seedit itself into a centralized crawler.
+The archive API is also the integration seam for Seedit's in-app full-text
+search: the Seedit client's search bar queries this instance instead of turning
+Seedit itself into a centralized crawler.
 
 ## Crawl scope
 
@@ -50,7 +50,7 @@ Two deployments share this repository:
  | Next.js SSR web UI -> https://seeditarchive.org     |
  +------------------------------------------------------+
                            |
-                 planned Seedit in-app search
+                 Seedit in-app search (/search)
 ```
 
 - **API + crawler** run beside the Bitsocial daemon and use its local-only PKC
@@ -59,7 +59,8 @@ Two deployments share this repository:
   [`bitsocial-indexer`](https://github.com/bitsocialnet/bitsocial-indexer)
   web UI, deployed to Vercel and pointed at the public read-only API.
 - **Seedit remains separate.** This repository does not change the Seedit
-  client; in-app search is the next phase after the archive is stable live.
+  client; the client's in-app search lives in the Seedit repo and consumes the
+  same public read-only API as everyone else.
 
 ## Repository layout
 
@@ -119,9 +120,9 @@ See [DEPLOY.md](DEPLOY.md) for the complete deployment and smoke-test flow.
 - **Update the engine:** rebuild the Compose service from the public
   `bitsocial-indexer` `master` branch.
 - **Update the web UI:** make changes in `webui/`; Vercel deploys `master`.
-- **Prepare Seedit integration:** keep `https://seedit.app` in the API CORS
-  allow-list, then implement the client query experience in the Seedit repo as
-  a separate reviewed change.
+- **Serve Seedit in-app search:** keep `https://seedit.app` and the canonical
+  `https://seedit.localhost` dev origin in the API CORS allow-list; the client
+  query experience itself lives in the Seedit repo.
 
 ## Content policy and takedowns
 
