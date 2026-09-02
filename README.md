@@ -67,9 +67,10 @@ Two deployments share this repository:
 | Path | Purpose |
 |---|---|
 | `webui/` | Seedit Archive's server-rendered search and browse UI |
-| `docker-compose.yml` | Builds the public indexer server and applies instance configuration |
+| `docker-compose.yml` | Runs the public indexer server from a pinned GHCR image and applies instance configuration |
 | `config/communities.json` | Generated exact community addresses to crawl |
 | `config/blocklist.json` | Operator takedown blocklist |
+| `config/nsfw-overrides.json` | Operator NSFW overrides; they outrank every other NSFW signal |
 | `scripts/build-communities.mjs` | Rebuilds the crawl scope from `bitsocialnet/lists` |
 | `.env.example` | Documents server configuration; the real `.env` stays on the VPS |
 | `DEPLOY.md` | VPS, Caddy, Cloudflare, and Vercel runbook |
@@ -117,8 +118,9 @@ See [DEPLOY.md](DEPLOY.md) for the complete deployment and smoke-test flow.
 
 - **Refresh communities:** run `node scripts/build-communities.mjs`, commit the
   generated change, copy `config/` to the VPS, and restart only this instance.
-- **Update the engine:** rebuild the Compose service from the public
-  `bitsocial-indexer` `master` branch.
+- **Update the engine:** bump the `image:` tag in `docker-compose.yml` to the
+  wanted `bitsocial-indexer` release, copy the file to the VPS, then
+  `docker compose pull && docker compose up -d`.
 - **Update the web UI:** make changes in `webui/`; Vercel deploys `master`.
 - **Serve Seedit in-app search:** keep `https://seedit.app` and the canonical
   `https://seedit.localhost` dev origin in the API CORS allow-list; the client

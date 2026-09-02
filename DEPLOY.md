@@ -22,7 +22,10 @@ or 5chan-heavy list is a release blocker.
 ## 2. VPS API and crawler
 
 The VPS has no credentials for this repository, so copy the small operational
-surface from a trusted checkout:
+surface from a trusted checkout. The engine itself is neither copied nor built:
+it is pulled as a public image from GHCR
+(`ghcr.io/bitsocialnet/bitsocial-indexer`), pinned to a release tag in
+`docker-compose.yml`, and needs no registry login.
 
 ```bash
 ssh root@91.234.199.189 'install -d -m 0755 /opt/seeditarchive'
@@ -36,6 +39,8 @@ Create `/opt/seeditarchive/.env` on the VPS with mode `0600`:
 PKC_RPC_URL=ws://localhost:9138
 SITE_URL=https://seeditarchive.org
 ALLOWED_ORIGINS=https://seeditarchive.org,https://seedit.app,https://seedit.localhost
+DIRECTORY_DEFAULTS_SOURCE=https://raw.githubusercontent.com/bitsocialnet/lists/master/seedit-directories/seedit-directories-defaults.json
+NSFW_OVERRIDES_SOURCE=/config/nsfw-overrides.json
 CRAWL_INTERVAL_MS=5000
 CRAWL_CONCURRENCY=8
 CRAWL_TIMEOUT_MS=30000
@@ -46,11 +51,21 @@ Because this service uses host networking, `localhost` reaches the daemon as a
 local connection. Do **not** copy the daemon's remote auth key into this env
 file: it is unnecessary and dependency logs must never receive it.
 
-Build and start only this Compose project:
+The two `*_SOURCE` values feed the engine's NSFW resolution, which decides per
+community, highest precedence first: the operator override in
+`config/nsfw-overrides.json`, then the community's own `features.safeForWork`,
+then its Seedit directory's verdict (`DIRECTORY_DEFAULTS_SOURCE`, the
+directories-defaults list keyed by directory code), then inference from flagged
+content. The overrides file is a JSON array (`[]` when empty) of bare addresses
+or `{ "address": "...", "nsfw": false, "reason": "..." }` objects; the engine
+watches it like the blocklist and applies a copied file within about a minute
+without a restart.
+
+Pull the pinned engine image and start only this Compose project:
 
 ```bash
 cd /opt/seeditarchive
-docker compose up -d --build
+docker compose pull && docker compose up -d
 docker compose ps
 docker compose logs --tail=100 server
 curl -sS http://127.0.0.1:4002/api/health | jq
@@ -61,8 +76,15 @@ Operational boundaries:
 - host networking lets `ws://localhost:9138` reach the daemon;
 - the API binds only `127.0.0.1:4002` (`4001` belongs to the host's IPFS daemon);
 - the V8 heap starts at 512 MiB with a 1 GiB container limit;
-- SQLite persists in the `seeditarchive_data` Docker volume; and
-- the engine builds from `bitsocial-indexer`'s `master` branch.
+- SQLite persists in the `seeditarchive_data` Docker volume;
+- the engine is the `image:` tag pinned in `docker-compose.yml` — nothing is
+  built on the VPS, and `docker compose images` shows the tag actually running;
+  and
+- `config/` is a read-only bind mount, not part of the image: an image upgrade
+  never changes it, and a changed config file must be copied to
+  `/opt/seeditarchive/config/` on its own. `communities.json` then needs
+  `docker compose restart server`; the blocklist and NSFW overrides are picked
+  up live.
 
 ## 3. Caddy
 
@@ -167,10 +189,15 @@ Also verify:
 
 ## Updates
 
+`config/` is a bind mount, not part of the image: an image upgrade never ships a
+config change, and a config change never needs an image pull. Copy the file
+and, where noted, restart.
+
 | Change | Action |
 |---|---|
 | Community scope | Regenerate, copy `config/`, then `docker compose restart server` |
 | Takedown blocklist | Copy `config/blocklist.json`; no restart is required |
-| Indexer engine | `docker compose build --no-cache && docker compose up -d` |
+| NSFW overrides | Edit `config/nsfw-overrides.json` (JSON array, `[]` when empty) and copy it; no restart is required |
+| Indexer engine | Bump the `image:` tag in `docker-compose.yml` to the wanted [release](https://github.com/bitsocialnet/bitsocial-indexer/tags), copy the file, then `docker compose pull && docker compose up -d`; `docker compose images` confirms the running tag, and the public image needs no `docker login` |
 | Web UI | Push `master`; Vercel builds the linked `webui/` project automatically |
 | Compose/env conventions | Copy `docker-compose.yml`, then recreate only this service |
