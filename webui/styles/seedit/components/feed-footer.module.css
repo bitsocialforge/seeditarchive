@@ -1,0 +1,52 @@
+/* Copied verbatim from seedit src/components/feed-footer/feed-footer.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.footer {
+  padding-left: 5px;
+  text-transform: lowercase;
+  padding-bottom: 40px;
+  padding-top: 5px;
+  font-size: 12px;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .footer {
+    margin-right: 310px;
+  }
+}
+
+.stateString, .morePostsSuggestion {
+  text-transform: lowercase;
+}
+
+.morePostsSuggestion {
+  padding-bottom: 15px;
+}
+
+@media (max-width: 640px) {
+  .morePostsSuggestion {
+    padding-bottom: 10px;
+  }
+}
+
+.morePostsSuggestion a, .link {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 1px 4px;
+  background: var(--pagination-button-background);
+  border: var(--pagination-button-border);
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: lowercase;
+  color: var(--link-primary);
+}
+
+.morePostsSuggestion a:hover, .link:hover {
+  border: var(--pagination-button-border-hover);
+}
+
+.notModerator {
+  color: var(--red);
+  font-size: 13px;
+  text-transform: lowercase;
+}

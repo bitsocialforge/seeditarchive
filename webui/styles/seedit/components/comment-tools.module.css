@@ -1,0 +1,89 @@
+/* Copied verbatim from seedit src/components/comment-tools/comment-tools.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.buttons {
+  list-style: none;
+  padding: 1px 0;
+  display: block;
+}
+
+.buttonsLabel {
+  padding-top: 5px;
+}
+
+.buttons li {
+  display: inline-block;
+  border: none;
+  padding-right: 4px;
+  line-height: 1.6em;
+  white-space: nowrap;
+}
+
+.buttons li a {
+  color: var(--text-info);
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0 1px;
+}
+
+.buttons .button {
+  color: var(--text-info);
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0 4px 0 4px;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.actionButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: inherit;
+}
+
+.actionButton:hover,
+.actionButton:focus-visible {
+  text-decoration: underline;
+}
+
+.text {
+  cursor: default !important;
+  color: var(--text-default) !important;
+  text-decoration: none !important;
+}
+
+.buttons li:hover {
+  text-decoration: underline;
+}
+
+.buttons .button span {
+  cursor: pointer;
+}
+
+.buttonsReply {
+  margin-left: 29px;
+}
+
+.firstButton {
+  padding-left: 0 !important;
+}
+
+.hideReply {
+  display: none !important;
+}
+
+@media (min-width: 640px) {
+  .reportButton, .crosspostButton, .embedButton {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .reportButton, .embedButton {
+    display: none !important;
+  }
+}

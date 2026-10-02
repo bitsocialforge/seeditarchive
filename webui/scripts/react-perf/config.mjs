@@ -68,9 +68,10 @@ export default {
           // to a new document; the report covers that document's client hydration.
           await page.locator('.header-search input[name="q"]').fill('needle');
           await measure('submit-search', async () => {
-            await page.locator('.header-search button[type="submit"]').click();
+            await page.locator('.header-search input[type="submit"]').click();
             await page.waitForURL(`${origin}/search?q=needle`);
-            await page.getByRole('heading', { name: 'Results for “needle”', exact: true }).waitFor();
+            await page.getByRole('heading', { name: 'search results', exact: true }).waitFor();
+            assert.equal(await page.locator('form[role="search"] input[name="q"]').inputValue(), 'needle');
             await expectPosts(page, 1);
             await page.getByRole('link', { name: threadTitle, exact: true }).waitFor();
           }, navigationBudget, { navigation: true });

@@ -1,0 +1,19 @@
+/* Copied verbatim from seedit src/components/flair/flair.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.flair {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  border-radius: 2px;
+  display: inline-block;
+  height: 16px;
+  overflow: hidden;
+  padding: 0 4px;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+  max-width: none;
+}
+
+.wrapper {
+  padding: 0 4px;
+}

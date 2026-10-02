@@ -1,0 +1,10 @@
+/* Copied verbatim from seedit src/app.module.css L19-27 @ a4ed379e. Re-sync by copying, not by editing. Global on purpose: Vite emits these bare selectors globally, and Next.js rejects impure selectors in CSS modules. */
+textarea, input {
+  background-color: var(--background);
+  color: var(--text-input);
+  border: 1px solid var(--border-text);
+}
+
+select, button, input, textarea {
+  filter: var(--filter80);
+}

@@ -28,4 +28,6 @@ export const getCommunity = (address: string) =>
   get<Community>(`/api/communities/${encodeURIComponent(address)}`, 300);
 export const getPosts = (query = '', revalidate = 60) => get<PostPage>(`/api/posts${query}`, revalidate);
 export const getThread = (cid: string) => get<Thread>(`/api/posts/${encodeURIComponent(cid)}`, 300);
-export const search = (q: string) => get<SearchResult>(`/api/search?q=${encodeURIComponent(q)}`);
+/** `options` adds sort/time/page/limit parameters (see lib/listing.ts). */
+export const search = (q: string, options: Record<string, string> = {}) =>
+  get<SearchResult>(`/api/search?${new URLSearchParams({ q, ...options }).toString()}`);

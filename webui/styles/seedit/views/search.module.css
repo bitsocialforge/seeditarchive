@@ -1,0 +1,54 @@
+/* Copied verbatim from seedit src/views/search/search.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+/* Page-level layout and status lines of the results page; group and row styles live in components/search-result. */
+
+.listing {
+  margin: 0 0 10px;
+}
+
+.info,
+.error {
+  color: var(--text-info);
+  font-size: 12px;
+  margin: 5px 0;
+  text-transform: lowercase;
+}
+
+/* The provider credit sits outside the groups, so it repeats their indent. */
+.providedBy {
+  box-sizing: border-box;
+  max-width: 750px;
+  padding-left: 30px;
+  padding-right: 20px;
+}
+
+.providedBy a {
+  color: var(--link-primary);
+  text-decoration: none;
+}
+
+.providedBy a:hover {
+  text-decoration: underline;
+}
+
+.retry {
+  background: none;
+  border: none;
+  color: var(--link-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  margin-left: 5px;
+  padding: 0;
+  text-transform: lowercase;
+}
+
+.retry:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 639px) {
+  .providedBy {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

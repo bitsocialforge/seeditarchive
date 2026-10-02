@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
-import { Exo, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { BrandHeader } from '@/components/BrandHeader';
 import { DevTools } from '@/components/DevTools';
 import { PerfBoundary } from '@/components/PerfBoundary';
 import { SiteFooter } from '@/components/SiteFooter';
-import { siteName, siteTitle, siteUrl, theme } from '@/lib/site';
-
-const exo = Exo({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-exo', display: 'swap' });
-const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
+import { siteName, siteTitle, siteUrl } from '@/lib/site';
+import app from '@/styles/seedit/app.module.css';
 
 const description = 'The permanent public archive and search engine for Seedit communities.';
 
@@ -20,18 +16,22 @@ export const metadata: Metadata = {
   description,
   openGraph: { siteName: siteTitle, type: 'website', title: siteTitle, description },
   twitter: { card: 'summary' },
+  // As in Seedit: third-party media hosts get no referrer (some refuse hotlinked media that carries one).
+  referrer: 'no-referrer',
 };
 
+// Seedit's default "light" theme: its tokens are scoped to `:root .light`, set
+// on <body> (for the page background) and on the app root, as Seedit does.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-theme={theme} className={`${exo.variable} ${manrope.variable}`}>
-      <body>
+    <html lang="en">
+      <body className="light">
         <DevTools />
-        <div className="glow" aria-hidden />
         <PerfBoundary>
-          <BrandHeader />
-          <main className="container">{children}</main>
-          <SiteFooter />
+          <div className={`${app.app} light`}>
+            {children}
+            <SiteFooter />
+          </div>
         </PerfBoundary>
         <Analytics />
       </body>

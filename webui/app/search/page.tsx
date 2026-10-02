@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
 import { ApiDown } from '@/components/Notice';
-import { PostCard } from '@/components/PostCard';
-import { SearchBar } from '@/components/SearchBar';
-import { search } from '@/lib/api';
+import { Chrome } from '@/components/seedit/Chrome';
+import { SearchPane, SearchResultGroup } from '@/components/seedit/SearchResults';
+import { ArchiveTitleBox, CommunityList, Sidebar, SidebarSubtitles } from '@/components/seedit/Sidebar';
+import { getCommunities, getHealth, search } from '@/lib/api';
+import { FEED_PAGE_SIZE, parseSearchState, type RawSearchParams, searchApiOptions } from '@/lib/listing';
+import layout from '@/styles/seedit/components/feed-layout.module.css';
+import view from '@/styles/seedit/views/search.module.css';
+import header from '@/styles/seedit/components/header.module.css';
 
-type SearchParams = { searchParams: Promise<{ q?: string }> };
+type SearchParams = { searchParams: Promise<RawSearchParams> };
 
 export async function generateMetadata({ searchParams }: SearchParams): Promise<Metadata> {
-  const { q } = await searchParams;
-  const query = (q ?? '').trim();
+  const { query } = parseSearchState(await searchParams);
   return {
     title: query ? `${query} — search` : 'Search',
     alternates: { canonical: '/search' },
@@ -18,34 +22,35 @@ export async function generateMetadata({ searchParams }: SearchParams): Promise<
 }
 
 export default async function SearchPage({ searchParams }: SearchParams) {
-  const { q } = await searchParams;
-  const query = (q ?? '').trim();
-  const result = query ? await search(query) : null;
-  const apiDown = query !== '' && result === null;
+  const state = parseSearchState(await searchParams);
+  const [result, health, communitiesRes] = await Promise.all([
+    state.query ? search(state.query, searchApiOptions(state)) : Promise.resolve(null),
+    getHealth(),
+    getCommunities(),
+  ]);
+  const apiDown = state.query !== '' && result === null;
 
   return (
-    <div>
-      <div className="page-search">
-        <SearchBar defaultValue={query} />
+    <>
+      <Chrome pageNameIsHeading pageName={<span className={header.lowercase}>search results</span>} />
+      <div className={layout.content}>
+        <div className={layout.sidebar}>
+          <Sidebar>
+            <ArchiveTitleBox health={health} />
+            <CommunityList communities={communitiesRes?.communities ?? []} />
+            <SidebarSubtitles />
+          </Sidebar>
+        </div>
+        <div className={view.listing}>
+          <SearchPane state={state} />
+          {apiDown ? <ApiDown /> : null}
+          {state.query && result ? (
+            <SearchResultGroup state={state} posts={result.posts} total={result.total} pageSize={FEED_PAGE_SIZE} />
+          ) : !apiDown ? (
+            <p className={`${view.info} ${view.providedBy}`}>Search the indexed communities.</p>
+          ) : null}
+        </div>
       </div>
-
-      {apiDown ? <ApiDown /> : null}
-
-      {query && result ? (
-        <>
-          <div className="results-head">
-            <h1>Results for “{result.query}”</h1>
-            <p>{result.total} {result.total === 1 ? 'match' : 'matches'}</p>
-          </div>
-          {result.posts.length === 0 ? (
-            <div className="notice">No posts matched. Try broader terms.</div>
-          ) : (
-            result.posts.map((p) => <PostCard key={p.cid} post={p} />)
-          )}
-        </>
-      ) : !apiDown ? (
-        <p className="muted" style={{ textAlign: 'center' }}>Search the indexed communities.</p>
-      ) : null}
-    </div>
+    </>
   );
 }

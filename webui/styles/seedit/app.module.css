@@ -1,0 +1,18 @@
+/* Copied verbatim from seedit src/app.module.css L1-17 @ a4ed379e. Re-sync by copying, not by editing. Its bare element rules (L19-27) live in app-elements.css: Next.js rejects impure selectors in CSS modules. */
+.app {
+  background-color: var(--background);
+  font: normal 10px verdana, arial, helvetica, sans-serif;
+  z-index: 1;
+  min-height: 100%;
+  color: var(--text-info);
+  overflow-y: hidden;
+  overflow-x: hidden;
+  min-height: 100vh;
+  color-scheme: var(--color-scheme) !important;
+}
+
+.lazyRouteLoading {
+  padding: 12px 15px;
+  color: var(--text-info);
+  font-size: 12px;
+}

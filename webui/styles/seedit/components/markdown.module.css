@@ -1,0 +1,94 @@
+/* Copied verbatim from seedit src/components/markdown/markdown.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.markdown a {
+  color: var(--markdown-link);
+}
+
+.markdown ol {
+  padding-left: 40px;
+  white-space: normal;
+  padding-bottom: 5px;
+}
+
+.markdown ul {
+  padding-left: 40px;
+  white-space: normal;
+  padding-bottom: 5px;
+}
+
+.markdown blockquote {
+  padding: 0 8px;
+  margin-left: 5px;
+  border-left: 2px solid var(--markdown-blockquote-border);
+  color: var(--markdown-blockquote);
+  white-space: normal;
+  display: flow-root;
+  margin-bottom: 5px;
+}
+
+.markdown blockquote > p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown blockquote blockquote > p:last-child {
+  margin-bottom: 5px;
+}
+
+.markdown blockquote > blockquote:last-child {
+  margin-bottom: 0;
+}
+
+.markdown li {
+  white-space: normal;
+}
+
+.markdown h1 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.markdown h2 {
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 15px;
+}
+
+.markdown h3, .markdown h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.markdown h4 {
+  font-weight: normal;
+}
+
+.markdown h5, .markdown h6 {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.markdown h6 {
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+.markdown p {
+  margin-bottom: 5px;
+}
+
+.markdown pre, .markdown code:not(pre code) {
+  border: 1px solid var(--code-border);
+  background-color: var(--code-background);
+  border-radius: 2px;
+  margin: 5px 0;
+  padding: 0 9px;
+  overflow: hidden;
+}
+
+.markdown code:not(pre code) {
+  padding: 0 3px;
+}
+
+.markdown pre {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}

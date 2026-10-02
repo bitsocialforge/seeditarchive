@@ -1,0 +1,5 @@
+/* Copied verbatim from seedit src/components/sidebar/sidebar.module.css L31-34 @ a4ed379e. Re-sync by copying, not by editing. Global on purpose: Vite emits this bare selector globally, so it styles every link in Seedit; Next.js rejects impure selectors in CSS modules. */
+a {
+  text-decoration: none;
+  color: var(--text);
+}

@@ -1,0 +1,373 @@
+/* Copied verbatim from seedit src/components/reply/reply.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.nested {
+  margin-top: 10px;
+  margin-left: 25px;
+  border-left: var(--reply-child-border-left);
+}
+
+.replyWrapper {
+  margin-top: 10px;
+}
+
+.singleReplyWrapper {
+  padding-bottom: 8px;
+}
+
+.unreadNotification {
+  background-color: var(--gray-overlay);
+  border: 1px solid var(--gray-overlay-border);
+  margin-left: 30px;
+  margin-right: 15px;
+  padding: 6px;
+  margin-bottom: 5px;
+}
+
+.midcol {
+  visibility: visible;
+  width: 15px;
+  float: left;
+  margin-right: 7px;
+  margin-left: 7px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.arrow {
+  width: 15px;
+  height: 14px;
+  display: block;
+  cursor: pointer;
+  margin: 2px 0px 0px 0px;
+  display: block;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+  outline: none;
+}
+
+.arrowUp {
+  background-image: url('/assets/buttons/arrow-up.png');
+}
+
+.upvoted {
+  background-image: url('/assets/buttons/arrow-upvoted.png') !important;
+}
+
+.arrowDown {
+  background-image: url('/assets/buttons/arrow-down.png');
+}
+
+.downvoted {
+  background-image: url('/assets/buttons/arrow-downvoted.png') !important;
+}
+
+.entry {
+  overflow: hidden;
+  margin-left: 3px;
+  opacity: 1;
+}
+
+.tagline {
+  display: inline-block;
+  color: var(--text);
+  font-size: x-small;
+}
+
+@media (max-width: 640px) {
+  .tagline {
+    line-height: 1.5;
+  }
+}
+
+.expand {
+  margin-right: 3px;
+  padding: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.author {
+  font-weight: bold;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.score {
+  margin-left: 0.5em;
+  color: var(--text-info);
+  font-size: x-small;
+}
+
+.time {
+  color: var(--text-info);
+  font-size: x-small;
+}
+
+.timeEdited {
+  font-style: italic;
+  text-transform: lowercase;
+}
+
+.stateString {
+  font-size: x-small;
+  color: var(--text-info);
+}
+
+.usertext {
+  font-size: small;
+  unicode-bidi: isolate;
+  margin-top: 5px;
+  position: relative;
+}
+
+.highlightMedia {
+  background-color: var(--yellow-highlight);
+  padding: 2px 5px;
+  display: inline-block;
+  width: 100%;
+}
+
+.md {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-markdown);
+  max-width: 60em;
+  word-wrap: break-word;
+  line-height: 20px;
+  filter: var(--filter80);
+}
+
+.removedOrDeletedContent {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.md p {
+  margin-bottom: 5px;
+}
+
+.md a {
+  color: var(--markdown-link) !important;
+}
+
+.hideSpoiler {
+  background-color: black;
+  color: black;
+  cursor: pointer;
+  width: 400px;
+  z-index: 999;
+  height: 50px;
+}
+
+.showSpoilerButton {
+  color: white;
+  background-color: black;
+  text-transform: lowercase;
+  position: absolute;
+  font-size: 12px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.highlightContent {
+  background-color: var(--yellow-highlight);
+  padding: 2px 5px;
+}
+
+.removedContent,
+.deletedContent {
+  text-transform: lowercase;
+  background-color: var(--removed-reply-backgrouhd-color);
+  display: inline-block;
+  padding: 5px;
+}
+
+.removedUsername {
+  color: var(--text-info);
+  text-transform: lowercase;
+}
+
+.hiddenMidcol {
+  visibility: hidden !important;
+}
+
+.usertext a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.stateLabel {
+  height: 0;
+  display: inline-block;
+}
+
+.moderatorBrackets {
+  color: var(--text-info);
+}
+
+.moderator,
+.admin,
+.owner {
+  color: var(--green);
+}
+
+.collapsedEntry .author,
+.collapsedEntry .removedUsername,
+.collapsedEntry .moderator,
+.collapsedEntry .admin,
+.collapsedEntry .owner,
+.collapsedEntry .moderatorBrackets,
+.collapsedEntry .time,
+.collapsedEntry .score,
+.collapsedEntry .children {
+  color: var(--text-info) !important;
+  font-style: italic !important;
+}
+
+.collapsedEntry {
+  padding-left: 25px;
+  min-height: 16px;
+}
+
+.parent {
+  color: var(--text);
+  margin-left: 7px;
+  word-break: break-all;
+}
+
+.parentLink {
+  font-size: small;
+  margin-top: 10px;
+  color: var(--link);
+  outline: none;
+  margin-right: 0.4em;
+  padding: 0px;
+  overflow: hidden;
+  unicode-bidi: isolate;
+}
+
+.parentLink:visited {
+  color: var(--link-visited);
+}
+
+.parentAuthor {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.parentCommunity {
+  color: var(--text-primary);
+}
+
+.inboxParentLinkSubject {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.inboxParentLink {
+  font-weight: normal;
+  font-style: italic;
+  margin-left: 10px;
+  font-size: 12px;
+  color: var(--link);
+  outline: none;
+  overflow: hidden;
+  unicode-bidi: isolate;
+}
+
+.inboxParentLink:visited {
+  color: var(--link-visited);
+}
+
+.inboxParentLinkWrapper {
+  margin-left: 7px;
+}
+
+.inboxParentUnread {
+  color: orangered !important;
+  font-weight: 700;
+}
+
+.inboxParentRead {
+  color: green;
+}
+
+.inboxParentInfo a {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.inboxParentInfoButton {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: inline-block;
+}
+
+.addMargin {
+  margin-left: 29px;
+}
+
+.pinned {
+  color: var(--green);
+  text-transform: lowercase;
+}
+
+.continueThisThread {
+  display: block;
+  margin: 10px 0 0 25px;
+  border-left: var(--reply-child-border-left);
+  font-size: 12px;
+}
+
+.continueThisThread a {
+  color: var(--text-primary);
+  text-decoration: none;
+  margin-left: 3px;
+}
+
+.continueThisThread a::after {
+  background-image: var(--continue-thread-arrow);
+  background-repeat: no-repeat;
+  content: ' ';
+  display: inline-block;
+  width: 25px;
+  height: 9px;
+  margin: 5px 0 0 5px;
+}
+
+.viewParentComment {
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  .md {
+    padding-right: 5px;
+  }
+}
+
+.stamp {
+  font-family: inherit;
+  font-size: x-small;
+  line-height: normal;
+  vertical-align: middle;
+}
+
+.submitter {
+  color: var(--submitter-color);
+}
+
+.submitter:hover {
+  text-decoration: underline;
+}
+
+.modReason {
+  color: var(--text-info);
+}

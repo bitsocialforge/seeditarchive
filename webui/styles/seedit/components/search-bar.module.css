@@ -1,0 +1,291 @@
+/* Copied verbatim from seedit src/components/search-bar/search-bar.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.searchBar {
+  position: relative;
+  z-index: 2;
+  min-width: 300px;
+}
+
+.searchBar input[type="text"] {
+  position: relative;
+  border: 1px solid gray;
+  background-color: var(--background);
+  color: var(--text);
+  font-size: 13px;
+  font-family: verdana;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 6px 25px 6px 9px;
+  text-transform: lowercase;
+}
+
+@media (max-width: 639px) {
+  .mobileInfobar input[type="text"] {
+    width: 100%;
+  }
+
+  .mobileInfobar .infobar {
+    width: calc(100% - 22px);  
+  }
+}
+
+.searchBar input[type="submit"] {
+  background-color: transparent;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAb1BMVEUAAACJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYm4Po3NAAAAJXRSTlMAAQIEDBAREhMUJS0uQ09QV19hZG1udHmbnJ64xMXGx8jOz9DUayO31AAAANNJREFUeAGF0fFugjAUhfGDg3W1blMEC2IV8Lz/My4nEnK7jOz3380nN7XFy0fdJzL1tUeujBMXUyxh7Acaw96UBzPj2sqBmtuDc6Edqe+0U6Km/v01VJ2muJxtUnnDYqc2e0itbRVWlXbWkJ5kC6MleYUkkgcYgWSCkKSD4Uiy+CdpYfi98Pb3MRqS3fbhzxA/61e77C8/vbmorrIXdcmvtwnOhWaknNZH0Zw7mqfcbGWcuXheTqaJr6+JvHVnDxzzJkUBUZNvZGy7Y7PZZH097p8/V4YmEaKXKKIAAAAASUVORK5CYII=');
+  background-size: 13px 13px;
+  background-position: 0 0;
+  height: 13px;
+  width: 13px;
+  border: none;
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  cursor: pointer;
+  font-size: 0px;
+}
+
+.searchBar input[type="submit"]:hover {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAeFBMVEUAAACJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYl3r/6iAAAAJ3RSTlMAAQMFDhMUFhcYLC02N1FfYGlydXiDhIuRuru8vt3s7e7v8PH4+fpBQVyrAAAA1ElEQVR4AYXQcW+CMBBA8cPBuk7cpgiCiFUE3/f/hksuDbmakf3+uuSl5DhR8lH1AUJfeUnl7UQ0tbktnwPGsDXlTuKxtFzfjM3OubIZ9V0eUwvQv4sqOoA27jYB/ZtEmw6Yvc4VMBayKEag0rEHGjEa4KJTAHY2lUDQCcDZ5ACyf1IAytcPXv9eowbO68sfdfQz0G2SX356c6iusIc6peetS+fKegTgINH2wav90ob1lrcz0fN0SJv46hLgej56kb1pUZaJiu1HUqbdZLXZZH3fb1+/i3YpBcVhtqwAAAAASUVORK5CYII=');
+  cursor: pointer;
+}
+
+.infobar {
+  position: relative;
+  width: 278px;
+  white-space: normal;
+  border-radius: 3px;
+  background-color: var(--background-orange);
+  border-color: var(--border-orange);
+  border-style: solid;
+  border-width: 1px;
+  font-size: small;
+  padding: 10px;
+  overflow: hidden;
+  z-index: 1;
+  margin-top: 5px;
+  margin-bottom: 12px;
+  will-change: transform;
+  transition: transform 0.3s linear, visibility 0.3s linear, height 0.3s linear;
+  transform-origin: top;
+}
+
+.slideDown {
+  transform: scaleY(1);
+  visibility: visible;
+  height: 78px;
+}
+
+.lessHeight {
+  height: 50px;
+}
+
+/* The parameter list has no fixed height, so the box grows to fit it. */
+.advancedOpen {
+  height: auto;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.slideUp {
+  transform: scaleY(0);
+  visibility: hidden;
+  height: 20px;
+}
+
+.infobar label {
+  display: block;
+  color: var(--text);
+  padding-bottom: 10px;
+}
+
+.infobar input[type="checkbox"] {
+  margin: 2px .5em 0 0;
+}
+
+.searchBarWrapper {
+  position: relative;
+  will-change: transform;
+  transition: transform 0.3s linear;
+}
+
+.contentWrapper {
+  position: relative;
+  will-change: transform;
+  transition: transform 0.3s linear;
+}
+
+.dropdown {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 14px;
+  position: absolute;
+  width: calc(100% - 8px);
+  margin: 0;
+  border: 1px solid var(--border-text);
+  background: var(--background);
+  left: 0;
+  list-style: none;
+  z-index: 999999999 !important;
+}
+
+.dropdownItem {
+  text-decoration: none;
+  display: block;
+  padding: 5px;
+  cursor: pointer;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.dropdownItem:hover, .activeDropdownItem {
+  background-color: var(--text-primary);
+  color: var(--background);
+}
+
+.dropdownItem:hover {
+  color: var(--background);
+}
+.advancedSearchLink,
+.advancedSearchCollapse {
+  background: none;
+  border: none;
+  color: var(--link-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.advancedSearchLink:hover,
+.advancedSearchCollapse:hover {
+  text-decoration: underline;
+}
+
+.advancedSearch {
+  color: var(--text);
+  margin: 5px 0;
+  padding: 5px 0 0;
+}
+
+.advancedSearchIntro {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.advancedSearchParams {
+  margin: 5px 0;
+}
+
+/* dt/dd sit at old.reddit's 10px/20px indents, with no gap between pairs. */
+.advancedSearchParam dt {
+  font-weight: bold;
+  margin-left: 10px;
+  word-break: break-word;
+}
+
+.advancedSearchParam dd {
+  margin-left: 20px;
+  word-break: break-word;
+}
+
+.advancedSearchExample {
+  margin: 5px 0;
+}
+
+.advancedSearchExample code {
+  font-family: monospace, monospace;
+  word-break: break-word;
+}
+
+
+/* The page variant: old.reddit's .searchpane above its search results, with its
+   15px box, the blue magnifier button and the options listed under the box. */
+.searchPane {
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 10px 10px 30px;
+}
+
+.searchPaneTitle {
+  color: var(--search-result-meta);
+  font-size: 13px;
+  margin: 0 0 3px;
+}
+
+.pageSearchForm {
+  max-width: 810px;
+}
+
+.pageSearchRow {
+  align-items: center;
+  display: flex;
+}
+
+.pageSearchRow input[type='text'] {
+  background-color: var(--background);
+  border: 1px solid var(--search-result-meta);
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: var(--text);
+  flex: 0 1 750px;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+  min-width: 0;
+  padding: 5px 25px 5px 10px;
+}
+
+.pageSearchSubmit {
+  background-color: var(--button-background-color);
+  border: 1px solid transparent;
+  border-bottom: 2px solid var(--button-border-bottom);
+  border-radius: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: none;
+  line-height: 22px;
+  margin-left: 10px;
+  padding: 5px 15px;
+}
+
+.pageSearchSubmit:hover,
+.pageSearchSubmit:focus-visible {
+  background-color: var(--button-background-color-hover);
+}
+
+.pageSearchSubmit:active {
+  border-bottom-width: 1px;
+  margin-top: 1px;
+}
+
+.pageSearchIcon {
+  background: url('/assets/search/search-button-icon.png') center / 20px 20px no-repeat;
+  display: inline-block;
+  height: 20px;
+  transform: translateY(-1px);
+  vertical-align: middle;
+  width: 20px;
+}
+
+.pageSearchForm label {
+  display: block;
+  margin: 5px 0;
+}
+
+.pageSearchForm input[type='checkbox'] {
+  margin: 3px 3px 3px 0;
+  vertical-align: middle;
+}
+
+.pageAdvancedSearch {
+  margin: 5px 0;
+}
+
+@media (max-width: 639px) {
+  .searchPane {
+    padding-left: 10px;
+  }
+}

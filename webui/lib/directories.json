@@ -1,0 +1,137 @@
+[
+  {
+    "code": "askseedit",
+    "title": "AskSeedit",
+    "description": "Ask the Seedit community anything: thought-provoking and open-ended questions.",
+    "tags": [
+      "questions",
+      "discussion",
+      "conversation"
+    ],
+    "boards": [
+      "askseedit.bso"
+    ]
+  },
+  {
+    "code": "memes",
+    "title": "Memes",
+    "description": "Memes of all kinds. A way of describing cultural information being shared.",
+    "tags": [
+      "memes",
+      "humor",
+      "culture"
+    ],
+    "boards": [
+      "memes-posting.bso"
+    ]
+  },
+  {
+    "code": "news",
+    "title": "News",
+    "description": "News from around the world: current events, politics and everything in between.",
+    "tags": [
+      "news",
+      "world",
+      "journalism",
+      "current-events"
+    ],
+    "boards": [
+      "news-posting.bso"
+    ]
+  },
+  {
+    "code": "pics",
+    "title": "Pics",
+    "description": "A place for photographs, pictures, and other images.",
+    "tags": [
+      "pictures",
+      "photography",
+      "images"
+    ],
+    "boards": [
+      "pics-posting.bso"
+    ]
+  },
+  {
+    "code": "todayilearned",
+    "title": "Today I Learned",
+    "description": "You learn something new every day; what did you learn today?",
+    "tags": [
+      "learning",
+      "facts",
+      "knowledge",
+      "history"
+    ],
+    "boards": [
+      "til-posting.bso"
+    ]
+  },
+  {
+    "code": "interestingasfuck",
+    "title": "Interesting As Fuck",
+    "description": "For anything that is InterestingAsFuck.",
+    "tags": [
+      "interesting",
+      "curiosity",
+      "science",
+      "nature"
+    ],
+    "boards": [
+      "interestingasfuck.bso"
+    ]
+  },
+  {
+    "code": "gaming",
+    "title": "Gaming",
+    "description": "A community for (almost) anything related to games: video games, board games, card games, and so on.",
+    "tags": [
+      "gaming",
+      "videogames",
+      "boardgames"
+    ],
+    "boards": [
+      "gaming-posting.bso"
+    ]
+  },
+  {
+    "code": "videos",
+    "title": "Videos",
+    "description": "The best place for video content of all kinds.",
+    "tags": [
+      "videos",
+      "film",
+      "clips",
+      "documentary"
+    ],
+    "boards": [
+      "videos-posting.bso"
+    ]
+  },
+  {
+    "code": "funny",
+    "title": "Funny",
+    "description": "Seedit's largest humour depository.",
+    "tags": [
+      "humor",
+      "comedy",
+      "jokes"
+    ],
+    "boards": [
+      "funny-posting.bso"
+    ]
+  },
+  {
+    "code": "aww",
+    "title": "Aww",
+    "description": "Things that make you go AWW! Like puppies, bunnies, babies, and so on.",
+    "tags": [
+      "animals",
+      "cute",
+      "pets",
+      "wholesome"
+    ],
+    "boards": [
+      "aww-posting.bso"
+    ]
+  }
+]

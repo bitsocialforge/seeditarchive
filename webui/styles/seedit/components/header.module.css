@@ -1,0 +1,202 @@
+/* Copied verbatim from seedit src/components/header/header.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.header {
+  border-bottom: 1px solid var(--border-primary);
+  position: relative;
+  background-color: var(--background-primary);
+  font-size: 12px;
+  /* Add flex display */
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  align-items: flex-end; /* This aligns children to bottom */
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+
+.logoLink {
+  all: unset;
+  cursor: pointer;
+}
+
+.logoContainer {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  width: auto;
+  max-height: 40px;
+  margin: 0 3px 0 5px;
+  filter: var(--filter90);
+}
+
+.logoText {
+  width: 84px;
+  max-height: 26px;
+  margin-top: 16px;
+  padding-right: 5px;
+  filter: var(--filter90);
+}
+
+@media (max-width: 640px) {
+  .container {
+    height: 45px;
+  }
+
+  .reducedHeight {
+    padding-bottom: 0;
+  }
+
+  .reduceSubmitPageHeight {
+    margin-bottom: -5px;
+  }
+}
+
+.increasedHeight {
+  padding-top: 19px;
+}
+
+@media (min-width: 640px) {
+  .container {
+    height: 45px;
+  }
+}
+
+.pageName {
+  font-weight: bold;
+  font-variant: small-caps;
+  font-size: 1.2em;
+  color: var(--text);
+}
+
+.pageName a {
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pageName a:hover {
+  text-decoration: underline;
+  text-decoration-color: currentcolor;
+}
+
+.soloPageName {
+  padding-left: 10px;
+}
+
+.allOrModPageName {
+  position: absolute;
+  top: 26px;
+  left: 140px;
+}
+
+.submitTitle {
+  text-transform: uppercase;
+  font-size: 11px
+}
+
+.tabMenu {
+  list-style-type: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-end;
+  text-transform: lowercase;
+  padding-left: 10px;
+}
+
+@media (max-width: 640px) {
+  .tabMenu {
+    padding-left: 0;
+  }
+
+  .allOrModPageName {
+    top: 46px;
+    left: 138px;
+  }
+}
+
+.tabMenu li {
+  display: inline-flex;
+  align-items: flex-end;
+  font-weight: bold;
+  margin: 0px 3px;
+  line-height: 1.3;
+}
+
+.tabMenu li a {
+  padding: 2px 6px 0 6px;
+  background-color: var(--background-secondary);
+  text-decoration: none;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.tabMenu .selected a {
+  color: var(--green);
+  background-color: var(--background);
+  border: 1px solid var(--border-primary);
+  border-bottom: 1px solid var(--background);
+  padding: 2px 6px 0 6px;
+  display: inline-flex;
+  align-items: flex-end;
+  margin-bottom: -1px;
+}
+
+.horizontalScroll {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.horizontalScroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .joinButton {
+    display: none !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .tabMenu {
+    order: 1;
+  }
+
+  .pageName {
+    order: 2;
+  }
+
+  .joinButton {
+    order: 3;
+    margin-bottom: 3px;
+    margin-left: 5px;
+  }
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.goldTitle {
+  color: var(--gold-text);
+}
+
+.mobileDirectoryDisclosure {
+  padding: 2px 5px;
+  color: var(--text-info);
+  font-size: 10px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.mobileDirectoryDisclosure a {
+  color: var(--link-primary);
+  text-decoration: underline;
+}

@@ -1,0 +1,289 @@
+/* Copied verbatim from seedit src/components/post/post.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.content {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.leftcol {
+  flex-shrink: 0;
+}
+
+.rank {
+  padding-right: 3px;
+  padding-left: 3px;
+  min-width: 2.2ex;
+  margin-top: 15px;
+  color: #c6c6c6;
+  font-family: arial;
+  font-size: medium;
+  text-align: right;
+}
+
+.midcol {
+  width: 37px;
+  font-weight: bold;
+  font-size: small;
+  float: left;
+  padding-right: 7px;
+  background: transparent;
+  overflow: hidden;
+}
+
+.arrowWrapper {
+  padding-left: 11px;
+  padding-top: 2px;
+}
+
+.arrowCommon {
+  width: 15px;
+  height: 14px;
+  display: block;
+  cursor: pointer;
+}
+
+.arrowUp {
+  background-image: url("/assets/buttons/arrow-up.png");
+}
+
+.upvoted {
+  background-image: url("/assets/buttons/arrow-upvoted.png") !important;
+}
+
+.arrowDown {
+  background-image: url("/assets/buttons/arrow-down.png");
+}
+
+.downvoted {
+  background-image: url("/assets/buttons/arrow-downvoted.png") !important;
+}
+
+.score {
+  text-align: center;
+  color: var(--icon);
+}
+
+.entry {
+  flex-grow: 1;
+  overflow: visible;
+  padding: 0;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.link {
+  text-decoration: none;
+  color: var(--link);
+}
+
+.link:visited {
+  color: var(--link-visited);
+}
+
+.internalLink {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.internalLink:visited {
+  color: var(--link);
+}
+
+.externalLink {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.externalLink:visited {
+  color: var(--link-visited);
+}
+
+.pinnedLink {
+  color: var(--green) !important;
+  font-weight: bold !important;
+}
+
+.announcement {
+  color: var(--green) !important;
+}
+
+.domain {
+  color: var(--text-info);
+  font-size: 10px;
+  white-space: nowrap;
+  vertical-align: middle;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.domain a {
+  color: var(--text-info);
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.domain a:hover {
+  text-decoration: underline;
+}
+
+.tagline {
+  font-size: x-small;
+}
+
+.tagline a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.timeEdit {
+  text-transform: lowercase;
+  font-style: italic;
+}
+
+.community:hover, .author:hover span {
+  text-decoration: underline;
+}
+
+.authorAddressWrapper {
+  display: inline-block;
+  overflow-x: clip;
+}
+
+/* use the crypto name as the width of the html element, but hide it and display the verified author address instead */
+.authorAddressHidden {
+  visibility: hidden;
+  user-select: none;
+}
+
+.authorAddressVisible {
+  float: left;
+  width: 0;
+  /* sometimes the text wraps with float left */
+  white-space: nowrap;
+}
+
+@keyframes authorAddressChangedAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.authorAddressChanged {
+  animation-name: authorAddressChangedAnimation;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0s;
+  animation-iteration-count: 1;
+}
+
+.moderator, .admin, .owner {
+  color: var(--green) !important;
+}
+
+.displayName {
+  color: var(--text-primary);
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+.hiddenPost {
+  overflow: hidden;
+  border: 1px dashed var(--gray-light);
+  padding: 12px 16px;
+}
+
+.hiddenPostText {
+  font-size: 14px;
+  color: var(--text)
+}
+
+.undoHiddenPost {
+  display: inline-block;
+  color: #888;
+  font-weight: bold;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.lastClicked {
+  border: 1px dashed gray;
+}
+
+.subscribeButton {
+  position: absolute;
+  border: none;
+  background: none;
+  background-repeat: no-repeat;
+  height: 12px;
+  width: 12px;
+  background-size: 12px;
+}
+
+.subscribeHoverGroup {
+  padding: 0 3px;
+  white-space: nowrap;
+}
+
+.buttonSubscribe {
+  background-image: url("/assets/buttons/all_feed_subscribe.png");
+  cursor: pointer;
+}
+
+.buttonSubscribe:hover {
+  background-image: url("/assets/buttons/all_feed_subscribe_hover.png");
+  cursor: pointer;
+}
+
+.buttonSubscribed {
+  background-image: url("/assets/buttons/all_feed_subscribed.png");
+}
+
+.greenCommunityAddress {
+  color: var(--green-bright) !important;
+}
+
+.subscribeButtonWrapper:hover + .community {
+  color: var(--green-bright) !important;
+}
+
+.subscribeButtonWrapper {
+  padding-right: 14px;
+}
+
+.crosspostBadge {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAsElEQVR4AX2QAeYCURjE/386UCgEIIiAYEFBQEAo0BnSCQLfzPdadIUVIQQQHaATVErQa2iRenYZM3y/Gev9VX2BNAL7GON/EnD3Ls3W0hVmUb77gUhOdLwDmCufBD3l029oROAh75TLWe4+fB8BB7DVylH5EoBe+n/MMpFjqa+FBlQKITTLxXYO1JNFAgutn1WcyQ9QJtlKwgAG0obATWCULyvfkWaUVkVR1CrBT+AFO2B3/vHNAQgAAAAASUVORK5CYII=') top center;
+  background-size: contain;
+  vertical-align: middle;
+}
+
+@media only screen and (min-resolution: 2dppx), only screen and (-webkit-min-device-pixel-ratio: 2) {
+  .crosspostBadge {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABY0lEQVR4AbWUAURDQRjH36KoiAJIgAUJRQFCEYACAFIiEEhEAiIACAwx97tbA2UMREIa3gQQoQkqgRpkpdd33OPMyu1NHx/Pefe7//f/vrsoaxhjZrRSTwZuisXicNRrCGwPpRJswnMmaKVSGRJlSwLblaxZmA8tl8uD4Yq0XgQaPqQ9DZyF+QU7Gr7TjRqakq9tCluicDoEtuFtapRKpeUkSfqk5AMfBsyHdHJVw1cKEwXjngUrbv09DAZrGj6cihcg38HXKTlkIPJDSpgzcAgc2ZRSjgVQ9/x5k39mw7sHj792DmKBTXY38bCv4cGCHfxe8sLAdhzH/eLjuqg+tzPYaS6lQbnww5TaTNUK9NKHnsKCrLeAq2q1OhIEtOMBnHjQGpBPK/PXs0PhE7iV7zvJJCs0J+VvaWj+dfU0FLp9siYcuOCa5wPrwGiUNZyHvcP818f6Kd5dO1jvIdduLPrv+AEaB6fwfGHytQAAAABJRU5ErkJggg==') top center;
+    background-size: contain;
+  }
+}

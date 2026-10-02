@@ -1,0 +1,348 @@
+/*
+ * Archive-only additions to the Seedit styles copied into styles/seedit/.
+ * They replace what Seedit does in JavaScript (expand/collapse toggles, its
+ * 640px and 770px viewport branches, inert vote arrows) and style the few
+ * archive-specific pieces. Colors and sizes reuse Seedit's theme tokens.
+ */
+
+/* ── utilities ── */
+
+.srOnly,
+.toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.toggle {
+  opacity: 0;
+}
+
+.relative {
+  position: relative;
+}
+
+.summary {
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Seedit's arrows vote; the archive's are decoration. */
+.inert.inert {
+  cursor: default;
+}
+
+/* ── viewport branches Seedit takes in JavaScript (isMobile is < 640px) ── */
+
+@media (max-width: 639px) {
+  .desktopOnly {
+    display: none !important;
+  }
+
+  .postRow > .rank {
+    display: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .mobileOnly {
+    display: none !important;
+  }
+}
+
+/* ── header ── */
+
+/* "archive" set beside Seedit's text logo, in the header's link color. */
+.archiveTag {
+  display: inline-block;
+  margin: 0 5px 2px 1px;
+  vertical-align: bottom;
+  font: bold 13px verdana, arial, helvetica, sans-serif;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+/* ── post rows ── */
+
+.expandLabel {
+  cursor: pointer;
+}
+
+.expandToggle:not(:checked) ~ .collapsible {
+  display: none;
+}
+
+.expandToggle:checked ~ .topMatter .expandIcon {
+  background-image: var(--close-button);
+}
+
+.expandToggle:checked ~ .topMatter .expandIcon:hover {
+  background-image: var(--close-button-hover);
+}
+
+.expandToggle:focus-visible ~ .topMatter .expandIcon {
+  outline: 1px dotted var(--text);
+  outline-offset: 1px;
+}
+
+/* Below 770px Seedit renders the expando under the whole row instead of in the entry column. */
+@media (max-width: 769px) {
+  .postRow {
+    flex-wrap: wrap;
+  }
+
+  .entry {
+    display: contents;
+  }
+
+  .topMatter {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .expandoRow {
+    flex: 0 0 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+/* A thumbnail whose image failed shows Seedit's 50px link icon (ThumbnailImage). */
+.thumbFrame:has([data-broken-thumbnail]) {
+  height: 50px !important;
+}
+
+.thumbFrame:has([data-broken-thumbnail]) .thumbWrapper {
+  display: inline;
+  width: auto;
+  height: auto;
+  background-color: transparent;
+}
+
+/* The post page's h1 keeps Seedit's inline title look. */
+.titleHeading {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+/* The domain is text here (Seedit links it to a domain feed the archive doesn't have). */
+.domainText {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--text-info);
+}
+
+/* Authors are text too (Seedit links its author pages); keep the link color. */
+.taglineText {
+  color: var(--text-primary);
+}
+
+/* ── replies ── */
+
+.whenChecked {
+  display: none;
+}
+
+.collapseToggle:checked ~ .replyMidcol {
+  display: none;
+}
+
+/* Seedit's .collapsedEntry */
+.collapseToggle:checked ~ .replyBody > .replyEntry {
+  padding-left: 25px;
+  min-height: 16px;
+}
+
+.collapseToggle:checked ~ .replyBody > .replyEntry .collapsedMuted {
+  color: var(--text-info) !important;
+  font-style: italic !important;
+}
+
+.collapseToggle:checked ~ .replyBody > .replyContent,
+.collapseToggle:checked ~ .replyBody > .replyEntry > .replyContent,
+.collapseToggle:checked ~ .replyBody > .replyEntry .whenUnchecked {
+  display: none;
+}
+
+.collapseToggle:checked ~ .replyBody > .replyEntry .whenChecked {
+  display: inline;
+}
+
+.collapseToggle:focus-visible ~ .replyBody > .replyEntry label {
+  outline: 1px dotted var(--text);
+}
+
+/* Seedit renders this as a span, so its margins don't apply. */
+.repliesHeading {
+  display: inline;
+}
+
+/* The post page's menu area clips overflow, which would hide the sort menu. */
+.menuVisible.menuVisible {
+  overflow: visible;
+}
+
+.inlineDetails > summary {
+  display: inline;
+}
+
+.dropdownLink {
+  display: block;
+  text-decoration: none;
+}
+
+/* ── search ── */
+
+.groupHeading {
+  margin: 0;
+}
+
+.excerptToggle:checked ~ .excerpt {
+  max-height: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.excerptButton {
+  cursor: pointer;
+}
+
+.excerptToggle:checked ~ .excerptButton .whenChecked {
+  display: inline;
+}
+
+.excerptToggle:checked ~ .excerptButton .whenUnchecked {
+  display: none;
+}
+
+.excerptToggle:focus-visible ~ .excerptButton {
+  outline: 1px dotted var(--text);
+}
+
+/* ── sidebar ── */
+
+/* Seedit's hidden search-options box leaves this gap below the search bar. */
+.sidebarSearch {
+  margin-bottom: 12px;
+}
+
+.blockLink {
+  display: block;
+}
+
+.titleBoxLine {
+  color: var(--text);
+}
+
+/* Contains the floated .age line. */
+.titleBoxBottom {
+  overflow: hidden;
+}
+
+.titleBoxBottom a {
+  color: var(--text-primary);
+}
+
+.paragraph {
+  margin: 0;
+}
+
+.inlineLink {
+  color: var(--link-primary) !important;
+}
+
+.stats {
+  padding-bottom: 5px;
+}
+
+.communityItem a {
+  color: var(--text-primary);
+}
+
+.communityItem a:hover {
+  text-decoration: underline;
+}
+
+.activeCommunity {
+  font-weight: bold;
+}
+
+.count {
+  color: var(--text-info);
+}
+
+/* ── pagination ── */
+
+.pagination {
+  color: var(--text-info);
+}
+
+.paginationSeparator {
+  display: inline-block;
+  width: 5px;
+}
+
+/* ── notices and static pages ── */
+
+/* The orange infobar Seedit uses for its single-comment and search-option boxes. */
+.notice {
+  max-width: 60em;
+  margin: 5px 0 10px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-orange);
+  background-color: var(--background-orange);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.notice code,
+.emptyCode pre {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.emptyCode {
+  box-sizing: border-box;
+  max-width: 580px;
+  margin: 1em auto;
+  padding: 5px 10px;
+  border: 1px solid var(--code-border);
+  background-color: var(--code-background);
+  text-align: left;
+}
+
+.emptyCode pre {
+  margin-top: 5px;
+  white-space: pre-wrap;
+}
+
+/* Seedit's static pages title their sections with .about h3. */
+.legal h2 {
+  font-size: 20px;
+  line-height: 1.25em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+/* Seedit's Label stamp beside a title rather than in a buttons row. */
+.inlineLabel {
+  display: inline-block;
+  vertical-align: 1px;
+}

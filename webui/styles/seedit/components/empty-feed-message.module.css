@@ -1,0 +1,6 @@
+/* Copied verbatim from seedit src/components/empty-feed-message/empty-feed-message.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.message {
+  color: var(--red);
+  font-size: 13px;
+  text-transform: lowercase;
+}

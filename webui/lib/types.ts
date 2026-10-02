@@ -7,6 +7,7 @@ export interface Community {
   added_at: number;
   last_indexed_at: number | null;
   post_count: number;
+  nsfw?: 0 | 1;
 }
 
 export interface Comment {
@@ -36,6 +37,14 @@ export interface Comment {
   takedown: 0 | 1;
   /** Operator-side bookkeeping (e.g. "DMCA #42") — not shown in the UI. */
   takedown_reason: string | null;
+  nsfw?: 0 | 1;
+  /**
+   * JSON of the signed source comment and its commentUpdate; null on
+   * tombstones. Only the row's own safe metadata is read from it (see
+   * lib/comment-meta.ts) — never content, and never the preloaded
+   * commentUpdate.replies pages, which are not redacted.
+   */
+  raw?: string | null;
 }
 
 export interface PostPage {

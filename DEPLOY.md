@@ -137,7 +137,6 @@ Production environment:
 | `SITE_NAME` | `Seedit Archive` |
 | `SITE_BADGE` | empty string |
 | `SITE_URL` | `https://seeditarchive.org` |
-| `THEME` | `default` |
 | `BRAND_TEXT` | `A Bitsocial Forge product` |
 | `BRAND_URL` | `https://bitsocialforge.com` |
 | `CONTACT_EMAIL` | a monitored takedown address, once configured |

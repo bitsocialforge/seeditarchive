@@ -1,0 +1,42 @@
+/* Copied verbatim from seedit src/views/not-found/not-found.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.content {
+  margin: 7px 5px 0px 5px;
+}
+
+.notFound {
+  text-align: center;
+  text-transform: lowercase;
+  color: var(--text);
+}
+
+.notFound h1 {
+  font-size: 18px;
+  font-weight: 400;
+  margin: 10px 0;
+}
+
+.notFound p {
+  margin: 1em auto;
+  font-size: 13px;
+}
+
+.content img {
+  display: block;
+  margin: auto;
+  border: 0;
+  width: 100%;
+  max-width: 750px;
+}
+
+@media (max-width: 640px) {
+  .content {
+    min-width: 0;
+    text-align: center;
+    width: auto;
+    padding: 10px;
+  }
+
+  .content img {
+    max-width: 100%;
+  }
+}

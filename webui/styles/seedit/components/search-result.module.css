@@ -1,0 +1,335 @@
+/* Copied verbatim from seedit src/components/search-result/search-result.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+/* A port of old.reddit's search listing (its search.less, as served): groups
+   capped at 750px and indented from the content edge, rows whose title, meta
+   line, collapsed excerpt and url line keep reddit's own sizes, spacing and
+   colors. The colors are the --search-result-* theme tokens. */
+
+.group {
+  box-sizing: border-box;
+  max-width: 750px;
+  padding-left: 30px;
+  padding-right: 20px;
+}
+
+.groupHeader {
+  align-items: baseline;
+  border-bottom: 2px solid var(--search-result-group-border);
+  color: var(--search-result-meta);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 30px 0 20px;
+}
+
+.groupHeaderLabel {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 20px;
+}
+
+.groupHeaderMenus {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 0 20px;
+  line-height: 20px;
+}
+
+/* old.reddit's light dropdown, built on <details> like the feed's time menu. */
+.dropdown {
+  display: inline;
+  position: relative;
+}
+
+.dropdown summary {
+  cursor: pointer;
+  display: inline;
+  list-style: none;
+}
+
+.dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.selected {
+  background: url('/assets/buttons/droparrowgray.gif') no-repeat right center;
+  color: var(--search-result-meta);
+  font-weight: bold;
+  padding-right: 21px;
+  text-decoration: underline;
+}
+
+.dropChoices {
+  background-color: var(--background);
+  border: 1px solid var(--search-result-meta);
+  left: 0;
+  line-height: normal;
+  margin-top: 2px;
+  position: absolute;
+  top: 100%;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.dropChoices a {
+  color: var(--link-primary);
+  display: block;
+  padding: 2px 3px 1px;
+  text-decoration: none;
+}
+
+.dropChoices a:hover,
+.dropChoices a:focus-visible {
+  background-color: var(--button-link-background-hover);
+}
+
+.contents {
+  font-size: 12px;
+}
+
+.result {
+  margin: 10px 0 25px;
+}
+
+/* A result with a thumbnail sets it in a 70px column beside the row. */
+.hasThumbnail {
+  display: flex;
+}
+
+.hasThumbnail > * {
+  flex: 1 1;
+  min-width: 0;
+}
+
+.hasThumbnail > .thumbnail {
+  flex: 0 0 70px;
+  margin-right: 10px;
+  width: 70px;
+}
+
+.resultHeader {
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.resultHeader > * {
+  vertical-align: top;
+}
+
+.title {
+  color: var(--search-result-link);
+  font-size: 16px;
+  margin-right: 5px;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.title:visited {
+  color: var(--link-visited);
+}
+
+.title:hover {
+  text-decoration: underline;
+}
+
+.meta {
+  color: var(--search-result-meta);
+  font-size: 10px;
+  line-height: 20px;
+  word-break: break-word;
+}
+
+/* Keep unstyled children from adding to the meta line's own line-height. */
+.meta > * {
+  line-height: 1em;
+}
+
+.meta a {
+  color: var(--search-result-link);
+  text-decoration: none;
+}
+
+.meta a:visited {
+  color: var(--link-visited);
+}
+
+.meta a:hover {
+  text-decoration: underline;
+}
+
+/* The score reads at the body size and carries the bullet that separates it
+   from the comment count. */
+.score {
+  font-size: 12px;
+}
+
+.score::after {
+  content: ' •';
+}
+
+.comments {
+  font-weight: bold;
+}
+
+.icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 15px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.meta .icon {
+  vertical-align: text-bottom;
+}
+
+.scoreIcon {
+  background-image: url('/assets/search/score-icon.png');
+  background-size: 10px 14px;
+}
+
+.externalLinkIcon {
+  background-image: url('/assets/search/external-link-icon.png');
+  background-size: 15px 7px;
+}
+
+.searchWithinIcon {
+  background-image: url('/assets/search/search-within-icon.png');
+  background-size: 11px 12px;
+}
+
+.body {
+  color: var(--search-result-text);
+  font-size: 12px;
+  line-height: 15px;
+  padding-right: 40px;
+  word-break: break-word;
+}
+
+.expando {
+  overflow: hidden;
+}
+
+/* A clipped excerpt shows three lines, the last faded out, so a cut sentence
+   reads as cut. */
+.collapsedExpando {
+  mask-image: linear-gradient(to bottom, black 30px, transparent 45px);
+  max-height: 45px;
+  -webkit-mask-image: linear-gradient(to bottom, black 30px, transparent 45px);
+}
+
+.expandoButton {
+  background: none;
+  border: none;
+  color: var(--search-result-link);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 0;
+  text-transform: lowercase;
+}
+
+.expandoButton:hover {
+  text-decoration: underline;
+}
+
+/* The url line stays on one line; a long url is cut, never wrapped. */
+.footer {
+  font-size: 12px;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer > * {
+  line-height: 1em;
+}
+
+.footerLink {
+  color: var(--search-result-link);
+  margin-left: 5px;
+  text-decoration: none;
+}
+
+.footerLink:visited {
+  color: var(--link-visited);
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* A community result carries the wider join button old.reddit uses in search. */
+.subscribe {
+  display: inline-block;
+  margin-right: 5px;
+  min-width: 104px;
+  text-align: center;
+}
+
+.subscribe > span {
+  display: inline-block;
+  min-width: 90px;
+}
+
+.stamp {
+  border: 1px solid;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 10px;
+  line-height: 14px;
+  padding: 0 4px;
+  text-transform: uppercase;
+}
+
+.nsfwStamp {
+  color: var(--red-nsfw);
+}
+
+.loadMoreRow {
+  margin: 10px 0 30px;
+}
+
+.loadMore {
+  background: var(--pagination-button-background);
+  border: var(--pagination-button-border);
+  border-radius: 3px;
+  color: var(--link-primary);
+  cursor: pointer;
+  font-weight: bold;
+  padding: 1px 4px;
+  text-transform: lowercase;
+}
+
+.loadMore:hover {
+  border: var(--pagination-button-border-hover);
+}
+
+.loadMore:disabled {
+  color: var(--text-info);
+  cursor: default;
+}
+
+/* Search terms are marked by weight, not by a highlight fill, so the rows stay
+   as flat as the rest of the feed and matches never rely on color alone. */
+.result mark {
+  background: none;
+  color: inherit;
+  font-weight: bold;
+  line-height: 1em;
+}
+
+/* reddit's 30px indent is content on a phone, so the rows keep the narrow
+   gutter the rest of seedit's mobile surfaces use. */
+@media (max-width: 639px) {
+  .group {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .body {
+    padding-right: 10px;
+  }
+}

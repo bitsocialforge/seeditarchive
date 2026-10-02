@@ -1,0 +1,27 @@
+/* Copied verbatim from seedit src/index.css @ a4ed379e. Re-sync by copying, not by editing. */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--background);
+}
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td, iframe {
+  margin: 0;
+  padding: 0;
+}
+
+.spoilerText {
+  background: #4f4f4f;
+  cursor: pointer;
+  color: transparent;
+  border-radius: 2px;
+  transition: background-color 0.5s ease-out, color 0.5s ease-out;
+}
+
+.spoilerTextRevealed {
+  background: rgba(79,79,79,0.1);
+  transition: background-color 0.5s ease-out, color 0.5s ease-out;
+}

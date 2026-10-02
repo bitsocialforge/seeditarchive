@@ -1,0 +1,190 @@
+/* Copied verbatim from seedit src/components/topbar/topbar.module.css @ a4ed379e. Re-sync by copying, not by editing. */
+.headerArea {
+  background-color: var(--background-text);
+  white-space: nowrap;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-text);
+  font-size: 90%;
+  height: 18px;
+  line-height: 18px;
+  color: var(--text);
+}
+
+.widthClip {
+  display: flex;
+}
+
+.dropdown {
+  float: left;
+  display: inline;
+  position: relative;
+}
+
+.subsDropdown {
+  padding-left: 5px;
+  cursor: pointer;
+}
+
+.dropChoices {
+  top: 18px;
+  margin-top: 0;
+  position: absolute;
+  left: 0px;
+  border: 1px solid var(--border-text);
+  background-color: var(--background);
+  white-space: nowrap;
+  line-height: normal;
+  z-index: 9;
+}
+
+.subsDropChoices {
+  margin-left: 5px;
+}
+
+.dropdownItem {
+  cursor: pointer;
+  padding: 2px 3px 1px 3px;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .dropdownItem {
+    padding-bottom: 5px;
+    padding-top: 5px;
+  }
+}
+
+.dropdownItem:hover {
+  background-color: var(--background-primary);
+}
+
+.myCommunitiesItemButtonDotted {
+  font-style: italic;
+  text-transform: uppercase;
+  border-top: 1px dotted var(--text-primary);
+}
+
+.myCommunitiesItemButton {
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.dropChoices a, .dropChoices span {
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.noSubs {
+  text-transform: lowercase;
+  font-size: 10px;
+}
+
+.noSubs:hover {
+  background-color: var(--background);
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+.separator {
+  color: var(--gray-contrast);
+  cursor: default;
+}
+
+.selectedTitle {
+  background: none no-repeat scroll center right;
+  background-image: url("/assets/buttons/droparrowgray.gif");
+  display: inline-block;
+  vertical-align: bottom;
+  padding-right: 21px;
+  padding-left: 5px;
+  color: var(--text);
+  font-weight: normal;
+  margin-left: -5px;
+  cursor: pointer;
+}
+
+.srList {
+  overflow: hidden;
+}
+
+.srList .srBar {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.srList .srBar ul {
+  list-style: none;
+}
+
+.srList .srBar li {
+  display: inline;
+  white-space: nowrap;
+}
+
+.srList .srBar li a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.srList .srBar li .selected {
+  color: var(--green) !important;
+  font-weight: bold;
+}
+
+.srList .srBar li .selected:hover {
+  text-decoration: underline;
+}
+
+.srList .srBar .choice:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.srList .srBar .separator {
+  margin: 0px .7ex 0px .7ex;
+}
+
+.homeButton {
+  margin-left: 5px;
+}
+
+.editLink {
+  color: var(--text);
+  text-decoration: none;
+  background-color: var(--background-text);
+  padding: 0 5px 0 15px;
+  font-weight: bold;
+  margin-left: auto;
+}
+
+.editLink:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 640px) {
+  .homeButton {
+    margin-left: 10px;
+  }
+}
+
+.srList {
+  overflow-x: auto;
+  scrollbar-width: none; /* Hides the scrollbar in Firefox */
+  -ms-overflow-style: none;  /* Hides the scrollbar in IE and Edge */
+}
+
+.srList::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar in Chromium and WebKit-based browsers */
+}
+
+.srBar li {
+  display: inline-flex;
+}
