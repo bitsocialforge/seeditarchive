@@ -15,6 +15,12 @@ async function expectPosts(page, count) {
   assert.equal(await page.getByText('The indexer API isn’t reachable.').count(), 0);
 }
 
+// Server-rendered content satisfies page assertions before React hydrates a
+// new document; PerfBoundary wraps the root layout, so its first commit marks hydration.
+async function waitForHydration(page) {
+  await page.waitForFunction(() => window.__REACT_PERF__?.snapshot().profilerSupported, null, { polling: 100 });
+}
+
 async function prepare({ page }) {
   await page.addInitScript(() => { window.__PROFILING__ = true; });
 }
@@ -74,6 +80,7 @@ export default {
             assert.equal(await page.locator('form[role="search"] input[name="q"]').inputValue(), 'needle');
             await expectPosts(page, 1);
             await page.getByRole('link', { name: threadTitle, exact: true }).waitFor();
+            await waitForHydration(page);
           }, navigationBudget, { navigation: true });
         },
       },
