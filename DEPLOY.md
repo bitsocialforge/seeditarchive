@@ -11,7 +11,7 @@ CLI session in the `toms-projects-2188af94` team.
 ## 1. Generate and verify the crawl scope
 
 ```bash
-node scripts/build-communities.mjs
+node --experimental-strip-types scripts/build-communities.mts
 jq length config/communities.json
 ```
 

@@ -1,4 +1,5 @@
 import type { Comment } from './types';
+import { isRecord } from './api-contract';
 
 export interface Flair {
   text: string;
@@ -22,7 +23,7 @@ const EMPTY: CommentMeta = { spoiler: false, nsfw: false, pinned: false, locked:
 type Json = Record<string, unknown>;
 
 const asRecord = (value: unknown): Json | undefined =>
-  value && typeof value === 'object' && !Array.isArray(value) ? (value as Json) : undefined;
+  isRecord(value) ? value : undefined;
 
 const positiveNumber = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : undefined);
 
