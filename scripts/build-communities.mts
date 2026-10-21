@@ -57,7 +57,9 @@ function addCommunityAddresses(addresses: Set<string>, communities: Candidate[])
 const [defaults, listing] = await Promise.all([
   fetchJson(`https://api.github.com/repos/${REPO}/contents/${DEFAULTS_PATH}`)
     .then((metadata) => fetchJson(downloadUrl(metadata))).then((value) => parseSource(value, 'communities')),
-  fetchJson(`https://api.github.com/repos/${REPO}/contents/${DIRECTORY_PATH}`).then(parseListing),
+  fetchJson(`https://api.github.com/repos/${REPO}/contents/${DIRECTORY_PATH}`).then((value) =>
+    parseListing(value, (name) => name === DIRECTORY_DEFAULTS_FILE || /^seedit-.+-directory\.json$/.test(name)),
+  ),
 ]);
 
 if (!Array.isArray(listing)) {
