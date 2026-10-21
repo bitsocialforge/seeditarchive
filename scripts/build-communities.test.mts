@@ -11,7 +11,7 @@ const packageData: unknown = JSON.parse(await readFile(path.join(scripts, '../pa
 assert.ok(typeof packageData === 'object' && packageData !== null && 'name' in packageData);
 const seedit = packageData.name === 'seeditarchive';
 
-async function build(malformed: boolean) {
+async function build(malformed: boolean, optional?: 'null' | 'blank') {
   const root = await mkdtemp(path.join(tmpdir(), 'archive-directory-test-'));
   try {
     await mkdir(path.join(root, 'scripts'));
@@ -24,9 +24,13 @@ async function build(malformed: boolean) {
     await writeFile(path.join(root, 'webui/lib/directories.json'), JSON.stringify(previous));
     const prefix = seedit ? 'seedit' : '5chan';
     const candidates = [
-      { address: 'low.bso', score: 1, addedAt: 1 },
+      { address: 'low.bso', score: optional === 'null' ? null : 1, addedAt: optional === 'null' ? null : 1 },
       { address: malformed ? null : 'high.bso', score: 5, addedAt: 2 },
+      ...(optional === 'null' ? [{ address: 'dated.bso', score: 0, addedAt: 1 }] : []),
     ];
+    const metadata = optional === 'null' ? { title: null, description: null } : optional === 'blank' ? { title: '', description: '' } : { title: 'News' };
+    const code = optional === 'blank' ? '' : optional === 'null' ? null : 'news';
+    const tags = optional === 'blank' ? ['', ' '] : optional === 'null' ? null : ['news'];
     const responses = {
       [`/repos/bitsocialnet/lists/contents/${prefix}-directories`]: [
         { name: 'unrelated-submodule', type: 'file', download_url: null },
@@ -34,9 +38,9 @@ async function build(malformed: boolean) {
         { name: `${prefix}-directories-defaults.json`, download_url: 'https://fixture.test/metadata' },
       ],
       '/repos/bitsocialnet/lists/contents/seedit-default-subscriptions.json': { download_url: 'https://fixture.test/subscriptions' },
-      '/subscriptions': { communities: [{ address: 'default-only.bso', directoryCode: 'news' }] },
-      '/news': seedit ? { directoryCode: 'news', communities: candidates, tags: ['news'] } : { boards: candidates },
-      '/metadata': { directories: { news: { title: 'News' } } },
+      '/subscriptions': { communities: [{ address: 'default-only.bso', directoryCode: code }] },
+      '/news': seedit ? { directoryCode: code, communities: candidates, tags } : { boards: candidates },
+      '/metadata': { directories: { news: metadata, '': metadata } },
     };
     const bootstrap = `const responses = ${JSON.stringify(responses)};
 globalThis.fetch = async (url) => {
@@ -49,12 +53,13 @@ globalThis.fetch = async (url) => {
     const bootstrapPath = path.join(root, 'run.mts');
     await writeFile(bootstrapPath, bootstrap + (direct ? '' : "await import('./scripts/build-communities.mts');\n"));
     // Preserve and exercise the standalone executable contract on Unix.
-    const result = direct
+    const run = () => direct
       ? spawnSync(path.join(root, 'scripts/build-communities.mts'), [], {
           encoding: 'utf8',
           env: { ...process.env, PATH: path.dirname(process.execPath) + path.delimiter + process.env.PATH, NODE_OPTIONS: `--import=${pathToFileURL(bootstrapPath).href}` },
         })
       : spawnSync(process.execPath, ['--experimental-strip-types', bootstrapPath], { encoding: 'utf8' });
+    const result = run();
     assert.ifError(result.error);
     const history: unknown = JSON.parse(await readFile(path.join(root, 'webui/lib/directories.json'), 'utf8'));
     if (malformed) {
@@ -64,11 +69,26 @@ globalThis.fetch = async (url) => {
     } else {
       assert.equal(result.status, 0, result.stderr);
       const communities: unknown = JSON.parse(await readFile(path.join(root, 'config/communities.json'), 'utf8'));
-      assert.deepEqual(communities, seedit ? ['default-only.bso', 'high.bso', 'low.bso'] : ['high.bso', 'low.bso']);
-      assert.deepEqual(history, [{ code: 'news', title: 'News', ...(seedit ? { tags: ['news'] } : {}), boards: ['high.bso', 'low.bso'], former: ['former.bso'] }]);
+      assert.deepEqual(communities, [...(seedit ? ['default-only.bso'] : []), 'high.bso', 'low.bso', ...(optional === 'null' ? ['dated.bso'] : [])].sort());
+      const boards = optional === 'null' ? (seedit ? ['high.bso', 'dated.bso', 'low.bso'] : ['high.bso', 'low.bso', 'dated.bso']) : ['high.bso', 'low.bso'];
+      const blankCode = optional === 'blank' && seedit;
+      assert.deepEqual(history, [{
+        code: blankCode ? '' : 'news',
+        title: optional === 'null' ? (seedit ? 'news' : '/news/') : optional === 'blank' ? '' : 'News',
+        ...(seedit && tags ? { tags } : {}), boards,
+        ...(blankCode ? {} : { former: ['former.bso'] }),
+      }, ...(blankCode ? [{ code: 'news', title: 'Old news', boards: [], former: ['former.bso'] }] : [])]);
+      if (optional) {
+        const repeated = run();
+        assert.equal(repeated.status, 0, repeated.stderr);
+        assert.deepEqual(JSON.parse(await readFile(path.join(root, 'webui/lib/directories.json'), 'utf8')), history, 'The next run must accept its own stored history');
+      }
     }
   } finally { await rm(root, { recursive: true, force: true }); }
 }
 
 test('native TypeScript directory builder preserves rank, crawl scope, and historic URLs', () => build(false));
 test('directory builder rejects malformed responses without rewriting history', () => build(true));
+
+test('directory builder retains null metadata fallbacks and candidate ranking', () => build(false, 'null'));
+test('directory builder preserves blank display metadata and reads it on the next run', () => build(false, 'blank'));
