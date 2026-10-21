@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 const packageData: unknown = JSON.parse(await readFile(path.join(scripts, '../package.json'), 'utf8'));
@@ -17,7 +17,8 @@ async function build(malformed: boolean) {
     await mkdir(path.join(root, 'scripts'));
     await mkdir(path.join(root, 'webui/lib'), { recursive: true });
     for (const name of ['build-communities.mts', 'directory-history.mts', 'directory-data.mts']) {
-      await writeFile(path.join(root, 'scripts', name), await readFile(path.join(scripts, name)));
+      const source = path.join(scripts, name);
+      await writeFile(path.join(root, 'scripts', name), await readFile(source), { mode: (await stat(source)).mode & 0o777 });
     }
     const previous = [{ code: 'news', title: 'Old news', boards: ['former.bso'] }];
     await writeFile(path.join(root, 'webui/lib/directories.json'), JSON.stringify(previous));
@@ -42,10 +43,18 @@ globalThis.fetch = async (url) => {
   if (!(pathname in responses)) throw new Error('Unexpected fixture request: ' + pathname);
   return new Response(JSON.stringify(responses[pathname]), { status: 200 });
 };
-await import('./scripts/build-communities.mts');
 `;
-    await writeFile(path.join(root, 'run.mts'), bootstrap);
-    const result = spawnSync(process.execPath, ['--experimental-strip-types', path.join(root, 'run.mts')], { encoding: 'utf8' });
+    const direct = seedit && process.platform !== 'win32';
+    const bootstrapPath = path.join(root, 'run.mts');
+    await writeFile(bootstrapPath, bootstrap + (direct ? '' : "await import('./scripts/build-communities.mts');\n"));
+    // Preserve and exercise the standalone executable contract on Unix.
+    const result = direct
+      ? spawnSync(path.join(root, 'scripts/build-communities.mts'), [], {
+          encoding: 'utf8',
+          env: { ...process.env, PATH: path.dirname(process.execPath) + path.delimiter + process.env.PATH, NODE_OPTIONS: `--import=${pathToFileURL(bootstrapPath).href}` },
+        })
+      : spawnSync(process.execPath, ['--experimental-strip-types', bootstrapPath], { encoding: 'utf8' });
+    assert.ifError(result.error);
     const history: unknown = JSON.parse(await readFile(path.join(root, 'webui/lib/directories.json'), 'utf8'));
     if (malformed) {
       assert.notEqual(result.status, 0);
