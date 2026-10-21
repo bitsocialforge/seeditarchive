@@ -29,7 +29,7 @@ export const TIME_LABELS: Record<TimeFilter, string> = {
 
 const parseTime = (value: SearchParamValue): TimeFilter => {
   const raw = first(value);
-  return TIME_FILTERS.includes(raw as TimeFilter) ? (raw as TimeFilter) : 'all';
+  return TIME_FILTERS.find((time) => time === raw) ?? 'all';
 };
 
 const parsePage = (value: SearchParamValue): number => {
@@ -52,7 +52,7 @@ export interface FeedState {
 
 export function parseFeedState(params: RawSearchParams): FeedState {
   const raw = first(params.sort);
-  const sort = FEED_SORTS.includes(raw as FeedSort) ? (raw as FeedSort) : 'new';
+  const sort = FEED_SORTS.find((candidate) => candidate === raw) ?? 'new';
   return { sort, time: sort === 'top' ? parseTime(params.t) : 'all', page: parsePage(params.page) };
 }
 
@@ -109,7 +109,7 @@ export function parseSearchState(params: RawSearchParams): SearchState {
   const raw = first(params.sort);
   return {
     query: (first(params.q) ?? '').trim().slice(0, 200),
-    sort: SEARCH_SORTS.includes(raw as SearchSort) ? (raw as SearchSort) : 'relevance',
+    sort: SEARCH_SORTS.find((sort) => sort === raw) ?? 'relevance',
     time: parseTime(params.t),
     page: parsePage(params.page),
   };
@@ -139,7 +139,7 @@ export type ReplySort = (typeof REPLY_SORTS)[number];
 
 export function parseReplySort(params: RawSearchParams): ReplySort {
   const raw = first(params.sort);
-  return REPLY_SORTS.includes(raw as ReplySort) ? (raw as ReplySort) : 'best';
+  return REPLY_SORTS.find((sort) => sort === raw) ?? 'best';
 }
 
 export const replySortHref = (path: string, sort: ReplySort) => (sort === 'best' ? path : `${path}?sort=${sort}`);

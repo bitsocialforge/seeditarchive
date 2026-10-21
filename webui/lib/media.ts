@@ -14,11 +14,13 @@ const MEDIA_EXTENSIONS = {
     'aac adp adts aif aifc aiff amr au caf dra dts dtshd ecelp4800 ecelp7470 ecelp9600 eol flac kar lvp m2a m3a m3u m4a m4b mid midi mka mp2 mp2a mp3 mp4a mpga mxmf oga ogg opus pya ra ram rip rmi rmp s3m sil snd spx uva uvva wav wax weba wma xm',
 } as const;
 
-const mediaTypeByExtension = new Map<string, string>(
-  Object.entries(MEDIA_EXTENSIONS).flatMap(([type, extensions]) => extensions.split(' ').map((extension) => [extension, type])),
-);
+type ExtensionMediaType = keyof typeof MEDIA_EXTENSIONS;
+const mediaTypeByExtension = new Map<string, ExtensionMediaType>();
+for (const type of ['image', 'video', 'audio'] as const) {
+  for (const extension of MEDIA_EXTENSIONS[type].split(' ')) mediaTypeByExtension.set(extension, type);
+}
 
-function getPathMediaType(pathname: string): string | undefined {
+function getPathMediaType(pathname: string): ExtensionMediaType | 'gif' | undefined {
   const fileName = pathname.slice(pathname.lastIndexOf('/') + 1);
   const dotIndex = fileName.lastIndexOf('.');
   if (dotIndex === -1) return undefined;
@@ -50,7 +52,7 @@ function canEmbed(url: URL): boolean {
 
 function getYouTubeVideoId(url: URL): string | null {
   if (url.host.includes('youtu.be')) return url.pathname.slice(1);
-  if (url.pathname.includes('/shorts/')) return url.pathname.split('/shorts/')[1].split('/')[0];
+  if (url.pathname.includes('/shorts/')) return url.pathname.split('/shorts/')[1]?.split('/')[0] ?? null;
   if (url.searchParams.has('v')) return url.searchParams.get('v');
   return null;
 }
@@ -88,7 +90,7 @@ export function getMediaInfo(link: string | null | undefined, thumbnailUrl: stri
   } else if (url.pathname.toLowerCase().endsWith('.pdf')) {
     type = 'pdf';
   } else {
-    type = (getPathMediaType(url.pathname.toLowerCase()) as MediaType | undefined) ?? 'webpage';
+    type = getPathMediaType(url.pathname.toLowerCase()) ?? 'webpage';
     // Seedit's two branches both end here: any embeddable host is an iframe.
     if (canEmbed(url) || url.host.startsWith('yt.')) {
       type = 'iframe';
