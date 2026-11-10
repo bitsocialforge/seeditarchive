@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ApiDown } from '@/components/Notice';
 import { Chrome } from '@/components/seedit/Chrome';
 import { DirectoryCandidates } from '@/components/seedit/Directories';
 import { DirectoryTitleBox, LargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
@@ -22,11 +23,25 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function DirectoryPage({ params }: Params) {
-  const dir = await resolve(params);
-  const communities = new Map(((await getCommunities())?.communities ?? []).map((c) => [c.address, c]));
+  const [dir, res] = await Promise.all([resolve(params), getCommunities()]);
+  const chrome = <Chrome active={dir.code} pageNameIsHeading pageName={<Link href={directoryListPath(dir.code)}>directories</Link>} />;
+
+  // Without the API every candidate would read "not archived yet".
+  if (!res) {
+    return (
+      <>
+        {chrome}
+        <div className={layout.content}>
+          <ApiDown />
+        </div>
+      </>
+    );
+  }
+
+  const communities = new Map(res.communities.map((c) => [c.address, c]));
   return (
     <>
-      <Chrome active={dir.code} pageNameIsHeading pageName={<Link href={directoryListPath(dir.code)}>directories</Link>} />
+      {chrome}
       <div className={layout.content}>
         <div className={layout.sidebar}>
           <Sidebar>
