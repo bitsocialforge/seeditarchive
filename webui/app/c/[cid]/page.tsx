@@ -11,7 +11,7 @@ import { parseReplySort, REPLY_SORTS, type ReplySort, replySortHref, type RawSea
 import { communityPath, postPath, seeditPostUrl } from '@/lib/paths';
 import { buildReplyTree, type ReplyNode } from '@/lib/replies';
 import { getShortDisplayAddress } from '@/lib/seedit';
-import { isTombstone } from '@/lib/tombstone';
+import { isTombstone, lockedInfobar, tombstoneTitle } from '@/lib/tombstone';
 import type { Comment, Community } from '@/lib/types';
 import ax from '@/styles/archive.module.css';
 import notFound from '@/styles/seedit/views/not-found.module.css';
@@ -23,8 +23,7 @@ export const revalidate = 300;
 type Params = { params: Promise<{ cid: string }>; searchParams: Promise<RawSearchParams> };
 
 function threadTitle(post: Comment): string {
-  if (post.takedown || post.removed) return '[removed]';
-  if (post.deleted) return '[deleted]';
+  if (isTombstone(post)) return tombstoneTitle(post);
   return post.title || excerpt(post.content, 70) || 'untitled';
 }
 
@@ -84,14 +83,6 @@ function SortMenu({ path, selected }: { path: string; selected: string }) {
       </details>
     </div>
   );
-}
-
-/** Seedit's locked/removed/deleted post infobar state. */
-function lockedState(op: Comment | null): string {
-  if (!op) return '';
-  if (op.deleted) return 'deleted';
-  if (getCommentMeta(op).locked) return 'locked';
-  return op.removed || op.takedown ? 'removed' : '';
 }
 
 const commentsTitle = (count: number) => (count === 0 ? 'no comments (yet)' : count === 1 ? '1 comment' : `all ${count} comments`);
@@ -164,7 +155,7 @@ export default async function ThreadPage({ params, searchParams }: Params) {
   ]);
   const op = opThread?.post ?? null;
   const tree = buildReplyTree(replies, comment.cid, sort, !isSingleComment);
-  const locked = lockedState(op);
+  const locked = op ? lockedInfobar(op, getCommentMeta(op).locked) : '';
   const address = comment.community_address;
 
   return (

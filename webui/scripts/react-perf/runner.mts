@@ -46,21 +46,36 @@ await mkdir(output, { recursive: true, mode: 0o700 });
 const report: Report = { schemaVersion: 1, command, cpu, samples, viewport: { width: 1280, height: 900 }, output, startedAt: new Date().toISOString(), cases: [], ok: false };
 const abort = new AbortController();
 const interrupt = () => abort.abort(new Error('Profiling interrupted'));
-process.once('SIGINT', interrupt);
-process.once('SIGTERM', interrupt);
+// Stay subscribed until cleanup ends: with no listener left, a repeated signal
+// would kill Node before it closes the owned browser, server and slot lock.
+process.on('SIGINT', interrupt);
+process.on('SIGTERM', interrupt);
+// Long awaits race this, so the first signal starts cleanup at once rather
+// than at the next checkpoint.
+const interrupted = new Promise<never>((_, reject) => {
+  abort.signal.addEventListener('abort', () => reject(abort.signal.reason), { once: true });
+});
+void interrupted.catch(() => {});
+// Case setup races the interrupt too; a context abandoned there closes with the browser.
+function setupStep<T>(promise: Promise<T>, label: string) {
+  return Promise.race([bounded(promise, label), interrupted]);
+}
 const safeName = (name: string) => name.replace(/[^a-z0-9._-]/gi, '-');
 
 async function runCase(browser: Browser, target: Target, scenario: Scenario, origin: string, sample: number) {
   abort.signal.throwIfAborted();
-  const context = await bounded(browser.newContext({ viewport: report.viewport }), 'Case context creation');
-  const page = await bounded(context.newPage(), 'Case page creation');
+  const context = await setupStep(browser.newContext({ viewport: report.viewport }), 'Case context creation');
+  const page = await setupStep(context.newPage(), 'Case page creation');
   page.setDefaultTimeout(30000);
-  const cdp = await bounded(context.newCDPSession(page), 'Case CDP session creation');
-  await bounded(cdp.send('Emulation.setCPUThrottlingRate', { rate: cpu }), 'CPU throttling setup');
-  await context.addInitScript(() => {
-    window.__PROFILING__ = true;
-    window.__NO_DEV_TOOLBAR__ = true;
-  });
+  const cdp = await setupStep(context.newCDPSession(page), 'Case CDP session creation');
+  await setupStep(cdp.send('Emulation.setCPUThrottlingRate', { rate: cpu }), 'CPU throttling setup');
+  await setupStep(
+    context.addInitScript(() => {
+      window.__PROFILING__ = true;
+      window.__NO_DEV_TOOLBAR__ = true;
+    }),
+    'Profiling flag setup',
+  );
   const result: CaseResult = { target: target.name, scenario: scenario.name, sample, phases: [], consoleErrors: [] };
   report.cases.push(result);
   page.on('pageerror', (error) => {
@@ -150,6 +165,7 @@ async function runCase(browser: Browser, target: Target, scenario: Scenario, ori
   try {
     await Promise.race([
       crashed,
+      interrupted,
       (async () => {
         await scenario.prepare?.({ page, origin });
         await page.goto(new URL(scenario.path || '/', origin).href, { waitUntil: 'domcontentloaded', timeout: 180000 });
@@ -202,7 +218,7 @@ try {
     report.browser = await browser.version();
     if (command === 'selftest' || command === 'check') {
       process.stderr.write('[perf] Validating collector against React compatibility fixtures\n');
-      report.selftest = await runSelftest(browser, packageRoot);
+      report.selftest = await Promise.race([runSelftest(browser, packageRoot), interrupted]);
       if (command === 'selftest') return;
     }
     const config = (await import('./config.mts')).default;
@@ -245,11 +261,11 @@ try {
   report.error = error instanceof Error ? error.stack || error.message : String(error);
   process.stderr.write(`[perf] ${errorMessage(error)}\n`);
 } finally {
-  process.off('SIGINT', interrupt);
-  process.off('SIGTERM', interrupt);
   report.endedAt = new Date().toISOString();
   const filename = path.join(output, 'report.json');
   await writeFile(filename, JSON.stringify(report, null, 2), { mode: 0o600 });
   console.log(JSON.stringify({ ok: report.ok, report: filename, cases: report.cases.length, error: report.error || null }));
   process.exitCode = report.ok ? 0 : 1;
+  process.off('SIGINT', interrupt);
+  process.off('SIGTERM', interrupt);
 }

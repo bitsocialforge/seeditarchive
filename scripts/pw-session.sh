@@ -21,6 +21,11 @@ umask 077
 # workflow. When playwright-cli cannot be queried the lock is left alone, so a
 # broken CLI never silently disables the budget.
 #
+# A browser is not listed as open while its wrapper is still starting it, nor
+# after `close` stops it and before the slot is released. For those windows the
+# wrapper records its PID in the lock, and a lock whose wrapper is still running
+# is busy, never stale.
+#
 # PW_SESSION_POLL_SECONDS overrides how often `--wait` re-checks the slot.
 
 usage() {
@@ -62,6 +67,7 @@ fi
 owner_file="$lock_dir/owner"
 started_file="$lock_dir/started-at"
 workspace_file="$lock_dir/workspace"
+pid_file="$lock_dir/pid"
 default_wait_seconds=300
 poll_seconds="${PW_SESSION_POLL_SECONDS:-5}"
 
@@ -114,7 +120,37 @@ session_state() {
   echo dead
 }
 
+recorded_pid() {
+  sed -n '1p' "$pid_file" 2>/dev/null || true
+}
+
+# True while the wrapper that recorded its PID in the lock is still starting
+# or stopping its browser.
+wrapper_running() {
+  local pid
+
+  pid="$(recorded_pid)"
+  [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null
+}
+
+# Echoes `live`, `busy` (its wrapper is starting or stopping the browser),
+# `dead`, or `unknown` for the current lock. The slow browser list is read
+# first, so a wrapper that began stopping its browser meanwhile is still seen.
+lock_state() {
+  local owner="$1" state=dead
+
+  if [ -n "$owner" ]; then
+    state="$(session_state "$owner")"
+  fi
+  if [ "$state" = dead ] && wrapper_running; then
+    state=busy
+  fi
+  echo "$state"
+}
+
+# The PID is written first, so a lock being created is busy as early as possible.
 write_lock_metadata() {
+  printf '%s\n' "$$" >"$pid_file"
   printf '%s\n' "$1" >"$owner_file"
   date -u '+%Y-%m-%dT%H:%M:%SZ' >"$started_file"
   printf '%s\n' "$workspace" >"$workspace_file"
@@ -131,10 +167,14 @@ print_status() {
   owner="$(current_owner)"
   started="$(sed -n '1p' "$started_file" 2>/dev/null || true)"
   held_workspace="$(sed -n '1p' "$workspace_file" 2>/dev/null || true)"
-  state="$([ -n "$owner" ] && session_state "$owner" || echo unknown)"
+  state="$(lock_state "$owner")"
+  if [ -z "$owner" ] && [ "$state" = dead ]; then
+    state=unknown
+  fi
 
   case "$state" in
     live) echo "pw-session: browser slot is held" ;;
+    busy) echo "pw-session: browser slot is held (its browser is starting or stopping)" ;;
     dead) echo "pw-session: browser slot is held by a stale lock" ;;
     *) echo "pw-session: browser slot is held (browser state unverifiable)" ;;
   esac
@@ -146,6 +186,7 @@ print_status() {
 
   case "$state" in
     live) echo "Browser: running" ;;
+    busy) echo "Browser: starting or stopping (its wrapper is still running)" ;;
     dead)
       echo "Browser: not running — the next 'open' reclaims this slot automatically"
       ;;
@@ -167,7 +208,7 @@ reclaim_stale_lock() {
 }
 
 acquire() {
-  local session="$1" wait_seconds="$2" owner state reclaims=0
+  local session="$1" wait_seconds="$2" owner state reclaims=0 settles=0
 
   validate_session "$session"
   mkdir -p "$(dirname "$lock_dir")"
@@ -181,7 +222,22 @@ acquire() {
     fi
 
     owner="$(current_owner)"
-    state="$([ -n "$owner" ] && session_state "$owner" || echo dead)"
+    state="$(lock_state "$owner")"
+
+    if [ "$state" = dead ]; then
+      # The browser list is slow: if the slot changed hands or its wrapper began
+      # stopping the browser meanwhile, look again instead of reclaiming it.
+      if [ "$(current_owner)" != "$owner" ] || wrapper_running; then
+        continue
+      fi
+      # A lock without an owner is normally being created or released right
+      # now; give it a moment before treating it as abandoned.
+      if [ -z "$owner" ] && [ "$settles" -lt 1 ]; then
+        settles=$((settles + 1))
+        sleep 1
+        continue
+      fi
+    fi
 
     # Bounded so an unremovable lock directory fails loudly instead of spinning.
     if [ "$state" = dead ] && [ "$reclaims" -lt 3 ]; then
@@ -197,7 +253,7 @@ acquire() {
     fi
 
     if [ "$wait_seconds" -gt 0 ] && [ "$SECONDS" -lt "$wait_seconds" ]; then
-      echo "pw-session: slot held by '$owner'; retrying in ${poll_seconds}s (waited ${SECONDS}s of ${wait_seconds}s)" >&2
+      echo "pw-session: slot held by '${owner:-unknown}'; retrying in ${poll_seconds}s (waited ${SECONDS}s of ${wait_seconds}s)" >&2
       sleep "$poll_seconds"
       continue
     fi
@@ -230,7 +286,7 @@ release() {
     return 1
   fi
 
-  rm -f "$owner_file" "$started_file" "$workspace_file"
+  rm -f "$owner_file" "$started_file" "$workspace_file" "$pid_file"
   rmdir "$lock_dir"
   echo "pw-session: released browser slot for '$session'"
 }
@@ -282,6 +338,12 @@ case "$command" in
       release "$session"
       exit 1
     fi
+    # The browser is listed as open now, which keeps the slot held by itself;
+    # a PID left behind could later be reused by an unrelated process. A `close`
+    # that began meanwhile has recorded its own PID, which must stay.
+    if [ "$(current_owner)" = "$session" ] && [ "$(recorded_pid)" = "$$" ]; then
+      rm -f "$pid_file"
+    fi
     ;;
   close)
     session="${2:-}"
@@ -294,6 +356,11 @@ case "$command" in
     # Cleanup must always stop the browser, even when the lock was lost, so a
     # failed workflow cannot strand a running engine.
     owner="$(current_owner)"
+    # Once the browser stops it is no longer listed as open; mark the slot busy
+    # until the release below so a waiting `open` cannot reclaim it in between.
+    if [ "$owner" = "$session" ]; then
+      { printf '%s\n' "$$" >"$pid_file"; } 2>/dev/null || true
+    fi
     close_status=0
     "$playwright_cli" -s="$session" close || close_status=$?
     if [ "$close_status" -ne 0 ]; then
@@ -302,10 +369,14 @@ case "$command" in
 
     if [ -z "$owner" ]; then
       echo "pw-session: browser slot was already free; closed '$session' anyway"
-    elif [ "$owner" = "$session" ]; then
-      release "$session"
-    else
+    elif [ "$owner" != "$session" ]; then
       echo "pw-session: closed '$session'; left the slot held by '$owner' untouched" >&2
+    elif [ "$(current_owner)" != "$session" ]; then
+      # An older copy of this script, which ignores the busy marker, reclaimed
+      # the slot after the browser stopped. The browser is closed either way.
+      echo "pw-session: closed '$session'; its slot was already reclaimed"
+    else
+      release "$session"
     fi
     ;;
   status)
