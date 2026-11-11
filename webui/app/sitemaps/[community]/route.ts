@@ -1,4 +1,4 @@
-import { getCommunities, getCommunity, getPosts } from '@/lib/api';
+import { getCommunities, getPosts } from '@/lib/api';
 import {
   absUrl,
   CORE_SITEMAP,
@@ -60,7 +60,11 @@ export async function GET(_req: Request, { params }: Params): Promise<Response> 
     return urls ? xmlResponse(urlsetXml(urls)) : unavailableResponse();
   }
 
-  if (!(await getCommunity(id))) return new Response('unknown sitemap', { status: 404 });
+  // The community detail lookup returns null for an outage as well as for an
+  // unknown address; the list the sitemap index is built from tells them apart.
+  const listed = await getCommunities(SITEMAP_TTL);
+  if (!listed) return unavailableResponse();
+  if (!listed.communities.some((c) => c.address === id)) return new Response('unknown sitemap', { status: 404 });
   const urls = await communityUrls(id);
   return urls ? xmlResponse(urlsetXml(urls)) : unavailableResponse();
 }
