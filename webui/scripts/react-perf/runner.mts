@@ -56,19 +56,26 @@ const interrupted = new Promise<never>((_, reject) => {
   abort.signal.addEventListener('abort', () => reject(abort.signal.reason), { once: true });
 });
 void interrupted.catch(() => {});
+// Case setup races the interrupt too; a context abandoned there closes with the browser.
+function setupStep<T>(promise: Promise<T>, label: string) {
+  return Promise.race([bounded(promise, label), interrupted]);
+}
 const safeName = (name: string) => name.replace(/[^a-z0-9._-]/gi, '-');
 
 async function runCase(browser: Browser, target: Target, scenario: Scenario, origin: string, sample: number) {
   abort.signal.throwIfAborted();
-  const context = await bounded(browser.newContext({ viewport: report.viewport }), 'Case context creation');
-  const page = await bounded(context.newPage(), 'Case page creation');
+  const context = await setupStep(browser.newContext({ viewport: report.viewport }), 'Case context creation');
+  const page = await setupStep(context.newPage(), 'Case page creation');
   page.setDefaultTimeout(30000);
-  const cdp = await bounded(context.newCDPSession(page), 'Case CDP session creation');
-  await bounded(cdp.send('Emulation.setCPUThrottlingRate', { rate: cpu }), 'CPU throttling setup');
-  await context.addInitScript(() => {
-    window.__PROFILING__ = true;
-    window.__NO_DEV_TOOLBAR__ = true;
-  });
+  const cdp = await setupStep(context.newCDPSession(page), 'Case CDP session creation');
+  await setupStep(cdp.send('Emulation.setCPUThrottlingRate', { rate: cpu }), 'CPU throttling setup');
+  await setupStep(
+    context.addInitScript(() => {
+      window.__PROFILING__ = true;
+      window.__NO_DEV_TOOLBAR__ = true;
+    }),
+    'Profiling flag setup',
+  );
   const result: CaseResult = { target: target.name, scenario: scenario.name, sample, phases: [], consoleErrors: [] };
   report.cases.push(result);
   page.on('pageerror', (error) => {
