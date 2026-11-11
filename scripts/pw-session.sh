@@ -120,12 +120,16 @@ session_state() {
   echo dead
 }
 
+recorded_pid() {
+  sed -n '1p' "$pid_file" 2>/dev/null || true
+}
+
 # True while the wrapper that recorded its PID in the lock is still starting
 # or stopping its browser.
 wrapper_running() {
   local pid
 
-  pid="$(sed -n '1p' "$pid_file" 2>/dev/null || true)"
+  pid="$(recorded_pid)"
   [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null
 }
 
@@ -335,8 +339,9 @@ case "$command" in
       exit 1
     fi
     # The browser is listed as open now, which keeps the slot held by itself;
-    # a PID left behind could later be reused by an unrelated process.
-    if [ "$(current_owner)" = "$session" ]; then
+    # a PID left behind could later be reused by an unrelated process. A `close`
+    # that began meanwhile has recorded its own PID, which must stay.
+    if [ "$(current_owner)" = "$session" ] && [ "$(recorded_pid)" = "$$" ]; then
       rm -f "$pid_file"
     fi
     ;;

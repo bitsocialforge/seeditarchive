@@ -11,6 +11,7 @@ const wrapper = fileURLToPath(new URL('./pw-session.sh', import.meta.url));
 // A stand-in for playwright-cli: a browser is listed as open while
 // open/<session> exists, and `open`/`close` block while a hold-* file exists,
 // so a test can act while the wrapper is part-way through starting or stopping.
+// hold-opened-<session> keeps `open` from returning after its browser is listed.
 const stubCli = `#!/bin/bash
 set -eu
 dir="$PW_STUB_DIR"
@@ -27,6 +28,7 @@ case "\${2:-}" in
     touch "$dir/opening-$session"
     while [ -e "$dir/hold-open-$session" ]; do sleep 0.05; done
     touch "$dir/open/$session"
+    while [ -e "$dir/hold-opened-$session" ]; do sleep 0.05; done
     ;;
   close)
     rm -f "$dir/open/$session"
@@ -112,6 +114,31 @@ test('a session still stopping its browser keeps the slot until it releases it',
   assert.equal(closed.code, 0, closed.output);
   assert.match(closed.output, /released browser slot for 'first'/);
   assert.equal(existsSync(slot.lock), false);
+  assert.equal(slot.run('open', 'second').status, 0);
+  assert.equal(slot.owner(), 'second');
+});
+
+test('an open that returns after its close began leaves the closing marker in place', async (t) => {
+  const slot = isolatedSlot(t);
+  writeFileSync(slot.marker('hold-opened-first'), '');
+  const opening = slot.start('open', 'first');
+  await waitFor(slot.marker('open/first'));
+  // Cleanup starts while the open wrapper is still returning.
+  writeFileSync(slot.marker('hold-close-first'), '');
+  const closing = slot.start('close', 'first');
+  await waitFor(slot.marker('closing-first'));
+  rmSync(slot.marker('hold-opened-first'));
+  const opened = await opening.exit();
+  assert.equal(opened.code, 0, opened.output);
+
+  // The browser is stopping and its close wrapper has not released yet.
+  const second = slot.run('open', 'second');
+  assert.equal(second.status, 75, second.stderr);
+
+  rmSync(slot.marker('hold-close-first'));
+  const closed = await closing.exit();
+  assert.equal(closed.code, 0, closed.output);
+  assert.match(closed.output, /released browser slot for 'first'/);
   assert.equal(slot.run('open', 'second').status, 0);
   assert.equal(slot.owner(), 'second');
 });
