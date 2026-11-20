@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Chrome } from '@/components/seedit/Chrome';
 import { DirectoryCandidates } from '@/components/seedit/Directories';
-import { DirectoryTitleBox, LargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
+import { DirectoryTitleBox, LargeButton, MobileLargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
 import { getCommunities } from '@/lib/api';
 import { type Directory, directoryListPath, getDirectory, seeditCodeUrl } from '@/lib/directories';
 import layout from '@/styles/seedit/components/feed-layout.module.css';
@@ -36,6 +36,7 @@ export default async function DirectoryPage({ params }: Params) {
           </Sidebar>
         </div>
         <div className={layout.feed}>
+          <MobileLargeButton href={seeditCodeUrl(dir.code)}>Open in Seedit</MobileLargeButton>
           <DirectoryCandidates directory={dir} communities={communities} />
         </div>
       </div>

@@ -3,7 +3,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ApiDown } from '@/components/Notice';
 import { Chrome } from '@/components/seedit/Chrome';
 import { Feed } from '@/components/seedit/Feed';
-import { ArchiveTitleBox, CommunityList, LargeButton, Sidebar, SidebarSearch, SidebarSubtitles } from '@/components/seedit/Sidebar';
+import { ArchiveTitleBox, CommunityList, LargeButton, MobileLargeButton, Sidebar, SidebarSearch, SidebarSubtitles } from '@/components/seedit/Sidebar';
 import { getCommunities, getHealth, getPosts } from '@/lib/api';
 import { FEED_PAGE_SIZE, feedApiQuery, feedTabs, isDefaultFeedState, parseFeedState, type RawSearchParams } from '@/lib/listing';
 import { siteName } from '@/lib/site';
@@ -72,6 +72,7 @@ export default async function Home({ searchParams }: Props) {
             {siteName}: {state.sort === 'new' ? 'recent' : state.sort === 'top' ? 'top' : 'most commented'} posts across {communities.length}{' '}
             communities
           </h1>
+          <MobileLargeButton href="https://seedit.app">Browse live on Seedit</MobileLargeButton>
           {page === null ? (
             <ApiDown />
           ) : (

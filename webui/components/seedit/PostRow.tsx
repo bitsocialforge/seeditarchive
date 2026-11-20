@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { type CommentMeta, getCommentMeta } from '@/lib/comment-meta';
 import { getHasThumbnail, getMediaInfo, type MediaInfo } from '@/lib/media';
-import { communityPath, postPath, seeditPostUrl } from '@/lib/paths';
+import { communityPath, isLiveUpstream, postPath, SEEDIT_LINK, seeditCommunityUrl, seeditPostUrl } from '@/lib/paths';
 import { commentCount, postTitle } from '@/lib/post-display';
 import {
   formatScore,
@@ -197,7 +197,7 @@ function postLabels(post: Comment, meta: CommentMeta): ReactNode[] {
   return labels.map((label, index) => <Label key={label.key} color={label.color} text={label.key} first={index === 0} title={label.title} />);
 }
 
-/** Seedit's CommentTools, reduced to what works read-only: comments and the live thread. */
+/** Seedit's CommentTools, reduced to what works read-only: comments and the live thread (or its community, once archived). */
 function PostButtons({ post, meta }: { post: Comment; meta: CommentMeta }) {
   const labels = postLabels(post, meta);
   return (
@@ -207,9 +207,15 @@ function PostButtons({ post, meta }: { post: Comment; meta: CommentMeta }) {
         <Link href={postPath(post.cid)}>{commentCount(post.reply_count)}</Link>
       </li>
       <li className={tools.button}>
-        <a href={seeditPostUrl(post.community_address, post.cid)} target="_blank" rel="noopener noreferrer">
-          view on seedit
-        </a>
+        {isLiveUpstream(post) ? (
+          <a href={seeditPostUrl(post.community_address, post.cid)} {...SEEDIT_LINK}>
+            view on seedit
+          </a>
+        ) : (
+          <a href={seeditCommunityUrl(post.community_address)} {...SEEDIT_LINK}>
+            open s/{getShortDisplayAddress(post.community_address)} in seedit
+          </a>
+        )}
       </li>
     </ul>
   );

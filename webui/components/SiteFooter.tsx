@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { SEEDIT_LINK } from '@/lib/paths';
 import { brandText, brandUrl, siteName } from '@/lib/site';
 import styles from '@/styles/seedit/components/site-footer.module.css';
 
@@ -47,7 +48,9 @@ export function SiteFooter() {
           <h2 className={styles.heading}>apps &amp; tools</h2>
           <ul>
             <li>
-              <ExternalLink href="https://seedit.app">seedit</ExternalLink>
+              <a href="https://seedit.app" {...SEEDIT_LINK}>
+                seedit
+              </a>
             </li>
           </ul>
         </section>

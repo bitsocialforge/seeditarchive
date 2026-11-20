@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { archivedBoards, codePath, type Directory, directoryForAddress, directoryListPath } from '@/lib/directories';
-import { communityPath, postPath } from '@/lib/paths';
+import { communityPath, postPath, SEEDIT_LINK } from '@/lib/paths';
 import { formattedDate, getDisplayAddress, getPostScore, getShortDisplayAddress, timeAgo, utcTimestamp } from '@/lib/seedit';
 import { siteName, siteUrl } from '@/lib/site';
 import type { Comment, Community, Health } from '@/lib/types';
@@ -42,15 +42,28 @@ export function SidebarSearch({ defaultValue = '' }: { defaultValue?: string }) 
   );
 }
 
-/** Seedit's large sidebar button (with its nub), as a real link. */
+/** Seedit's large sidebar button (with its nub), as a real link into Seedit. */
 export function LargeButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={ax.blockLink}>
+    <a href={href} {...SEEDIT_LINK} className={ax.blockLink}>
       <div className={styles.largeButton}>
         {children}
         <div className={styles.nub} />
       </div>
     </a>
+  );
+}
+
+/**
+ * A sidebar's Seedit button, repeated in the main column for the widths where
+ * Seedit's layout hides the sidebar (below 640px). Hidden at every other width,
+ * so a page only ever shows one of the two copies.
+ */
+export function MobileLargeButton({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <div className={ax.mobileOnly}>
+      <LargeButton href={href}>{children}</LargeButton>
+    </div>
   );
 }
 
@@ -127,7 +140,7 @@ export function ArchiveTitleBox({ health }: { health: Health | null }) {
       <div className={styles.description}>
         <p className={ax.paragraph}>
           A permanent, read-only archive of public{' '}
-          <a href="https://seedit.app" target="_blank" rel="noopener noreferrer" className={ax.inlineLink}>
+          <a href="https://seedit.app" {...SEEDIT_LINK} className={ax.inlineLink}>
             Seedit
           </a>{' '}
           communities. Posts stay searchable here after they leave the live network.
