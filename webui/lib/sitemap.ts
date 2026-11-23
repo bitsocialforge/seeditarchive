@@ -34,6 +34,14 @@ export function xmlResponse(body: string, status = 200): Response {
   });
 }
 
+/**
+ * The API could not be read: a 503 the CDN never caches, so crawlers retry
+ * instead of getting a truncated sitemap for the next hours.
+ */
+export function unavailableResponse(): Response {
+  return new Response('sitemap temporarily unavailable', { status: 503, headers: { 'Cache-Control': 'no-store' } });
+}
+
 export function urlsetXml(urls: { loc: string; lastmod?: string }[]): string {
   const entries = urls
     .map((u) => `  <url><loc>${xmlEscape(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`)

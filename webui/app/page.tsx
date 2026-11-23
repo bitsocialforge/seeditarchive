@@ -31,7 +31,8 @@ export default async function Home({ searchParams }: Props) {
   const [health, communitiesRes] = await Promise.all([getHealth(), getCommunities()]);
   const chrome = <Chrome active="home" tabs={feedTabs('/', state)} />;
 
-  if (!health) {
+  // A failed community list is an outage too, not an archive with nothing configured.
+  if (!health || !communitiesRes) {
     return (
       <>
         {chrome}
@@ -42,7 +43,7 @@ export default async function Home({ searchParams }: Props) {
     );
   }
 
-  const communities = communitiesRes?.communities ?? [];
+  const { communities } = communitiesRes;
   if (communities.length === 0) {
     return (
       <>

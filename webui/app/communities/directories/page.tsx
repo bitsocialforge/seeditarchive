@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 import Link from 'next/link';
+import { ApiDown } from '@/components/Notice';
 import { Chrome } from '@/components/seedit/Chrome';
 import { DirectoryIndex } from '@/components/seedit/Directories';
 import { CommunityList, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
@@ -16,10 +18,29 @@ export const metadata: Metadata = {
 };
 
 export default async function DirectoriesPage() {
-  const communities = (await getCommunities())?.communities ?? [];
+  const res = await getCommunities();
+  const chrome = <Chrome pageNameIsHeading pageName={<Link href={DIRECTORY_INDEX_PATH}>directories</Link>} />;
+
+  // Without the API every route would read "0 posts archived". This page is cached and a failed
+  // regeneration keeps the last good one, so only a build without the API (or dev) shows the notice.
+  if (!res) {
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD) {
+      throw new Error('Indexer API unreachable: keeping the cached directory index');
+    }
+    return (
+      <>
+        {chrome}
+        <div className={layout.content}>
+          <ApiDown />
+        </div>
+      </>
+    );
+  }
+
+  const { communities } = res;
   return (
     <>
-      <Chrome pageNameIsHeading pageName={<Link href={DIRECTORY_INDEX_PATH}>directories</Link>} />
+      {chrome}
       <div className={layout.content}>
         <div className={layout.sidebar}>
           <Sidebar>

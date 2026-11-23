@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { checkBudgets } from './budgets.mts';
@@ -11,6 +14,43 @@ test('the native TypeScript performance entrypoint loads and handles help withou
   const result = spawnSync(process.execPath, ['--experimental-strip-types', fileURLToPath(new URL('./runner.mts', import.meta.url)), 'check', '--help'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /perf:check \| perf:record \| perf:test/);
+});
+
+test('repeated interrupts while the runner is busy still let it clean up and write its report', async (t) => {
+  const root = mkdtempSync(path.join(tmpdir(), 'react-perf-interrupt-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  // The runner's first external step is `git rev-parse`; this stand-in blocks
+  // there, then names a checkout without the browser wrapper, so no browser,
+  // lock or server is ever started.
+  writeFileSync(
+    path.join(root, 'git'),
+    `#!/bin/bash\ntouch "${root}/started"\nwhile [ -d "${root}" ] && [ ! -e "${root}/continue" ]; do sleep 0.05; done\necho "${root}"\n`,
+    { mode: 0o755 },
+  );
+  const output = path.join(root, 'report');
+  const child = spawn(process.execPath, ['--experimental-strip-types', fileURLToPath(new URL('./runner.mts', import.meta.url)), 'selftest', '--output', output], {
+    env: { ...process.env, PATH: `${root}${path.delimiter}${process.env.PATH ?? ''}` },
+    stdio: 'ignore',
+  });
+  t.after(() => { if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL'); });
+  const exited = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve) => child.once('exit', (code, signal) => resolve({ code, signal })));
+  const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  for (let waited = 0; !existsSync(path.join(root, 'started')); waited += 20) {
+    assert.ok(waited < 15_000, 'runner never reached its first external step');
+    await pause(20);
+  }
+  child.kill('SIGINT');
+  await pause(200);
+  child.kill('SIGINT');
+  await pause(200);
+  writeFileSync(path.join(root, 'continue'), '');
+
+  assert.deepEqual(await exited, { code: 1, signal: null });
+  const report: unknown = JSON.parse(readFileSync(path.join(output, 'report.json'), 'utf8'));
+  assert.ok(typeof report === 'object' && report !== null && 'ok' in report && 'error' in report);
+  assert.equal(report.ok, false);
+  assert.match(String(report.error), /Browser ownership wrapper missing/);
 });
 
 test('fixture API serves deterministic typed posts and rejects unknown routes', async () => {
