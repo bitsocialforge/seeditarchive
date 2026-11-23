@@ -159,6 +159,9 @@ communities and adds an operator-level removal mechanism:
   crawl rather than remaining readable.
 - Operator takedowns are applied through `config/blocklist.json`; the indexer
   watches the file and applies changes without a restart.
+- The downloadable snapshot at `api.seeditarchive.org/snapshots/latest/` holds
+  only what the API serves. It is regenerated daily, and a blocklist change
+  unpublishes it and generates a new one (see [DEPLOY.md](DEPLOY.md) section 7).
 
 The blocklist is a valid JSON array. Entries may be bare CID strings or objects:
 
@@ -170,8 +173,10 @@ The blocklist is a valid JSON array. Entries may be bare CID strings or objects:
 ]
 ```
 
-`scope` is `comment` or `thread`; `reason` is an operator note and is never
-served publicly. See [DEPLOY.md](DEPLOY.md) for the update command.
+`scope` is `comment` or `thread`; `reason` is a public operator note: the API
+and snapshots return it as `takedown_reason` (the web UI does not show it), and
+this repository is public, so never put personal information in it. See
+[DEPLOY.md](DEPLOY.md) for the update command.
 
 ## License
 

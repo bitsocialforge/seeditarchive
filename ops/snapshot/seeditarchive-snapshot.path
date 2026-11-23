@@ -1,0 +1,9 @@
+[Unit]
+Description=Regenerate the public Seedit Archive snapshot when the takedown blocklist changes
+
+[Path]
+PathChanged=/opt/seeditarchive/config/blocklist.json
+Unit=seeditarchive-snapshot.service
+
+[Install]
+WantedBy=paths.target
