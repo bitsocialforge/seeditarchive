@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { brandText, brandUrl, siteName } from '@/lib/site';
+import { SEEDIT_LINK } from '@/lib/paths';
+import { brandText, brandUrl, siteName, snapshotsUrl } from '@/lib/site';
 import styles from '@/styles/seedit/components/site-footer.module.css';
 
 const SOURCE_URL = 'https://github.com/bitsocialforge/seeditarchive';
@@ -30,6 +31,11 @@ export function SiteFooter() {
             <li>
               <Link href="/legal">legal</Link>
             </li>
+            {snapshotsUrl ? (
+              <li>
+                <Link href="/legal#snapshots">snapshots</Link>
+              </li>
+            ) : null}
           </ul>
         </section>
         <section className={styles.column}>
@@ -47,7 +53,9 @@ export function SiteFooter() {
           <h2 className={styles.heading}>apps &amp; tools</h2>
           <ul>
             <li>
-              <ExternalLink href="https://seedit.app">seedit</ExternalLink>
+              <a href="https://seedit.app" {...SEEDIT_LINK}>
+                seedit
+              </a>
             </li>
           </ul>
         </section>

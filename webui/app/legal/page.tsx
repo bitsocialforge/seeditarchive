@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Chrome } from '@/components/seedit/Chrome';
-import { brandText, brandUrl, contactEmail, siteName, siteTitle } from '@/lib/site';
+import { brandText, brandUrl, contactEmail, siteName, siteTitle, snapshotsUrl } from '@/lib/site';
 import ax from '@/styles/archive.module.css';
 import header from '@/styles/seedit/components/header.module.css';
 import staticPage from '@/styles/seedit/components/static-page.module.css';
@@ -70,6 +70,27 @@ export default function LegalPage() {
               </p>
             )}
           </section>
+
+          {snapshotsUrl ? (
+            <section id="snapshots">
+              <h2>Snapshots</h2>
+              <p>
+                A downloadable copy of this archive is published at{' '}
+                <a href={snapshotsUrl}>{snapshotsUrl}</a>: <code>comments.jsonl.gz</code> and{' '}
+                <code>communities.jsonl.gz</code> (gzip-compressed, one JSON object per line, in the
+                same shape as the API) and <code>manifest.json</code> with record counts and SHA-256
+                checksums. A snapshot holds only what this site serves: content pending approval is
+                left out, and removed, deleted or taken-down posts are tombstones without their
+                content.
+              </p>
+              <p>
+                The snapshot is regenerated daily and whenever a takedown request is honored. Each new
+                snapshot replaces the previous one, which is deleted, so redacted content does not
+                stay downloadable here. Copies downloaded earlier are outside this site&apos;s
+                control.
+              </p>
+            </section>
+          ) : null}
 
           <section>
             <h2>Media</h2>

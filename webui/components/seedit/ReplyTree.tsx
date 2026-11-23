@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { type CommentMeta, getCommentMeta } from '@/lib/comment-meta';
 import { getHasThumbnail, getMediaInfo } from '@/lib/media';
-import { postPath } from '@/lib/paths';
+import { isLiveUpstream, postPath, SEEDIT_LINK, seeditPostUrl } from '@/lib/paths';
 import type { ReplyNode } from '@/lib/replies';
 import { formatScore, getHostname, getReplyScore, getShortAddress, safeHttpUrl, UGC_REL } from '@/lib/seedit';
 import { isTombstone, tombstoneTitle } from '@/lib/tombstone';
@@ -130,7 +130,11 @@ function ReplyText({ reply, meta, highlighted }: { reply: Comment; meta: Comment
   );
 }
 
-/** Seedit's reply tools, reduced to the permalink (Seedit shows none on removed/deleted replies). */
+/**
+ * Seedit's reply tools, reduced to the permalink and the reply on Seedit (Seedit
+ * shows none on removed/deleted replies). An archived reply gets no Seedit
+ * link: its post's own link already points at the community.
+ */
 function ReplyButtons({ reply, meta }: { reply: Comment; meta: CommentMeta }) {
   if (isTombstone(reply)) return null;
   return (
@@ -140,6 +144,13 @@ function ReplyButtons({ reply, meta }: { reply: Comment; meta: CommentMeta }) {
       <li className={`${tools.button} ${meta.spoiler || meta.nsfw ? '' : tools.firstButton}`}>
         <Link href={postPath(reply.cid)}>permalink</Link>
       </li>
+      {isLiveUpstream(reply) ? (
+        <li className={tools.button}>
+          <a href={seeditPostUrl(reply.community_address, reply.cid)} {...SEEDIT_LINK}>
+            view on seedit
+          </a>
+        </li>
+      ) : null}
     </ul>
   );
 }

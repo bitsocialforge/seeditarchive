@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ApiDown } from '@/components/Notice';
 import { Chrome } from '@/components/seedit/Chrome';
 import { Feed } from '@/components/seedit/Feed';
-import { CommunityList, CommunityTitleBox, LargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
+import { CommunityList, CommunityTitleBox, LargeButton, MobileLargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
 import { getCommunities, getCommunity, getPosts } from '@/lib/api';
 import { excerpt } from '@/lib/format';
 import { FEED_PAGE_SIZE, feedApiQuery, feedTabs, isDefaultFeedState, parseFeedState, type RawSearchParams } from '@/lib/listing';
@@ -81,6 +81,7 @@ export default async function CommunityPage({ params, searchParams }: Params) {
           </Sidebar>
         </div>
         <div className={layout.feed}>
+          <MobileLargeButton href={seeditCommunityUrl(address)}>Open in Seedit</MobileLargeButton>
           <Feed
             posts={page.posts}
             basePath={basePath}

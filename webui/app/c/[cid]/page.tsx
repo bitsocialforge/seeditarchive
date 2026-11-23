@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { Chrome } from '@/components/seedit/Chrome';
 import { PostRow } from '@/components/seedit/PostRow';
 import { Reply } from '@/components/seedit/ReplyTree';
-import { CommunityTitleBox, LargeButton, PostInfo, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
+import { CommunityTitleBox, LargeButton, MobileLargeButton, PostInfo, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
 import { getCommunity, getThread } from '@/lib/api';
 import { getCommentMeta } from '@/lib/comment-meta';
 import { excerpt } from '@/lib/format';
 import { parseReplySort, REPLY_SORTS, type ReplySort, replySortHref, type RawSearchParams } from '@/lib/listing';
-import { communityPath, postPath, seeditPostUrl } from '@/lib/paths';
+import { communityPath, isLiveUpstream, postPath, seeditCommunityUrl, seeditPostUrl } from '@/lib/paths';
 import { buildReplyTree, type ReplyNode } from '@/lib/replies';
 import { getShortDisplayAddress } from '@/lib/seedit';
 import { isTombstone, lockedInfobar, tombstoneTitle } from '@/lib/tombstone';
@@ -87,13 +87,30 @@ function SortMenu({ path, selected }: { path: string; selected: string }) {
 
 const commentsTitle = (count: number) => (count === 0 ? 'no comments (yet)' : count === 1 ? '1 comment' : `all ${count} comments`);
 
-function ThreadSidebar({ op, comment, community }: { op: Comment | null; comment: Comment; community: Community | null }) {
+/** The page's way into Seedit: this comment while Seedit can still load it, its community once archived. */
+function seeditLink(comment: Comment): { href: string; label: string } {
+  return isLiveUpstream(comment)
+    ? { href: seeditPostUrl(comment.community_address, comment.cid), label: 'View on Seedit' }
+    : { href: seeditCommunityUrl(comment.community_address), label: 'Open Community in Seedit' };
+}
+
+function ThreadSidebar({
+  op,
+  comment,
+  community,
+  seedit,
+}: {
+  op: Comment | null;
+  comment: Comment;
+  community: Community | null;
+  seedit: ReturnType<typeof seeditLink>;
+}) {
   return (
     <div className={view.sidebar}>
       <Sidebar>
         <SidebarSearch />
         {op ? <PostInfo post={op} /> : null}
-        <LargeButton href={seeditPostUrl(comment.community_address, comment.cid)}>View on Seedit</LargeButton>
+        <LargeButton href={seedit.href}>{seedit.label}</LargeButton>
         <CommunityTitleBox community={community} address={comment.community_address} />
       </Sidebar>
     </div>
@@ -157,6 +174,7 @@ export default async function ThreadPage({ params, searchParams }: Params) {
   const tree = buildReplyTree(replies, comment.cid, sort, !isSingleComment);
   const locked = op ? lockedInfobar(op, getCommentMeta(op).locked) : '';
   const address = comment.community_address;
+  const seedit = seeditLink(comment);
 
   return (
     <>
@@ -166,13 +184,14 @@ export default async function ThreadPage({ params, searchParams }: Params) {
         tabs={[{ label: 'comments', href: postPath(op?.cid ?? comment.cid), selected: true }]}
       />
       <div className={view.content}>
-        <ThreadSidebar op={op} comment={comment} community={community} />
+        <ThreadSidebar op={op} comment={comment} community={community} seedit={seedit} />
         {locked ? (
           <div className={view.lockedInfobar}>
             <div className={view.lockedInfobarText}>This post is {locked}.</div>
           </div>
         ) : null}
         {op ? <PostRow post={op} isPostPage showCommunity /> : null}
+        <MobileLargeButton href={seedit.href}>{seedit.label}</MobileLargeButton>
         <div className={view.replyArea}>
           <ReplyAreaHeader comment={comment} replyCount={op?.reply_count ?? replies.length} sort={sort} />
           <div className={view.replies}>

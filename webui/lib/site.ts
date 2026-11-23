@@ -19,3 +19,10 @@ export const brandUrl = process.env.BRAND_URL ?? '';
  * Unset = the page says requests are handled by the instance operator.
  */
 export const contactEmail = process.env.CONTACT_EMAIL ?? '';
+
+/**
+ * Where this instance publishes its downloadable snapshot (the engine's
+ * `snapshot` export), e.g. https://api.seeditarchive.org/snapshots/latest/.
+ * Unset = no snapshots section on /legal and no footer link.
+ */
+export const snapshotsUrl = process.env.SNAPSHOTS_URL ?? '';

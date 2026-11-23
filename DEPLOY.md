@@ -94,7 +94,17 @@ Add a single vhost to `/etc/caddy/Caddyfile`:
 # Seedit Archive — API/crawler (-> 127.0.0.1:4002)
 api.seeditarchive.org {
 	encode zstd gzip
-	reverse_proxy 127.0.0.1:4002
+	# Public snapshots (DEPLOY.md section 7)
+	redir /snapshots /snapshots/
+	handle_path /snapshots/* {
+		root * /srv/seeditarchive-snapshots
+		file_server browse {
+			hide .*
+		}
+	}
+	handle {
+		reverse_proxy 127.0.0.1:4002
+	}
 }
 ```
 
@@ -140,6 +150,7 @@ Production environment:
 | `BRAND_TEXT` | `A Bitsocial Forge product` |
 | `BRAND_URL` | `https://bitsocialforge.com` |
 | `CONTACT_EMAIL` | a monitored takedown address, once configured |
+| `SNAPSHOTS_URL` | `https://api.seeditarchive.org/snapshots/latest/` (section 7); adds the snapshots section to `/legal` and a footer link, unset hides both |
 
 Attach both domains:
 
@@ -186,6 +197,47 @@ Also verify:
 
 - `/legal` displays a monitored contact before public promotion.
 
+## 7. Snapshots (api.seeditarchive.org/snapshots/)
+
+A downloadable copy of the archive, produced by the engine's snapshot export
+(engine README, "Snapshots"): `comments.jsonl.gz`, `communities.jsonl.gz` and
+`manifest.json`, holding exactly what the API serves. `ops/snapshot/` runs it:
+
+- `seeditarchive-snapshot.sh` runs the export in a one-off container of the
+  pinned server image (`docker compose run`), so it uses the live database and
+  `config/blocklist.json` with the same engine version as the server. The new
+  snapshot becomes `/srv/seeditarchive-snapshots/latest` and every older one is
+  deleted. If the blocklist changed since the published snapshot, that snapshot
+  is unpublished **before** regenerating, so a failed run leaves no snapshot
+  rather than one with taken-down content in it.
+- `seeditarchive-snapshot.timer` runs it daily at 04:50 UTC (plus up to 15 min).
+- `seeditarchive-snapshot.path` runs it whenever `config/blocklist.json`
+  changes, so a takedown reaches the download within seconds of the copy.
+- Caddy serves `/srv/seeditarchive-snapshots` under `/snapshots/` (vhost in
+  section 3).
+
+Install:
+
+```bash
+scp -r ops/snapshot root@91.234.199.189:/opt/seeditarchive/ops/
+ssh root@91.234.199.189
+cp /opt/seeditarchive/ops/snapshot/seeditarchive-snapshot.{service,timer,path} /etc/systemd/system/
+systemctl daemon-reload
+systemctl start seeditarchive-snapshot.service      # first snapshot
+systemctl enable --now seeditarchive-snapshot.timer seeditarchive-snapshot.path
+```
+
+Verify:
+
+```bash
+journalctl -u seeditarchive-snapshot.service -n 20
+curl -s https://api.seeditarchive.org/snapshots/latest/manifest.json
+systemctl list-timers seeditarchive-snapshot.timer
+```
+
+Content taken down after someone downloaded a snapshot stays in their copy;
+the `/legal` page says so.
+
 ## Updates
 
 `config/` is a bind mount, not part of the image: an image upgrade never ships a
@@ -195,7 +247,8 @@ and, where noted, restart.
 | Change | Action |
 |---|---|
 | Community scope | Regenerate, copy `config/`, then `docker compose restart server` |
-| Takedown blocklist | Copy `config/blocklist.json`; no restart is required |
+| Takedown blocklist | Copy `config/blocklist.json`; no restart is required. The copy also unpublishes and regenerates the snapshot (section 7); check with `journalctl -u seeditarchive-snapshot.service -n 20` |
+| Snapshot job | `scp -r ops/snapshot root@91.234.199.189:/opt/seeditarchive/ops/`; if a unit file changed, copy it to `/etc/systemd/system/` and `systemctl daemon-reload` |
 | NSFW overrides | Edit `config/nsfw-overrides.json` (JSON array, `[]` when empty) and copy it; no restart is required |
 | Indexer engine | Bump the `image:` tag in `docker-compose.yml` to the wanted [release](https://github.com/bitsocialnet/bitsocial-indexer/tags), copy the file, then `docker compose pull && docker compose up -d`; `docker compose images` confirms the running tag, and the public image needs no `docker login` |
 | Web UI | Push `master`; Vercel builds the linked `webui/` project automatically |

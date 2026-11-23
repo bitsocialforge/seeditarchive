@@ -4,7 +4,7 @@ import { permanentRedirect } from 'next/navigation';
 import { ApiDown } from '@/components/Notice';
 import { Chrome } from '@/components/seedit/Chrome';
 import { Feed } from '@/components/seedit/Feed';
-import { CommunityList, DirectoryTitleBox, LargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
+import { CommunityList, DirectoryTitleBox, LargeButton, MobileLargeButton, Sidebar, SidebarSearch } from '@/components/seedit/Sidebar';
 import { getCommunities } from '@/lib/api';
 import { archivedBoards, codePath, type Directory, getDirectory, seeditCodeUrl } from '@/lib/directories';
 import { mergedFeed } from '@/lib/feed';
@@ -78,6 +78,7 @@ export default async function CodePage({ params, searchParams }: Params) {
               </Sidebar>
             </div>
             <div className={layout.feed}>
+              <MobileLargeButton href={seeditCodeUrl(dir.code)}>Open in Seedit</MobileLargeButton>
               <Feed
                 posts={page.posts}
                 basePath={basePath}
